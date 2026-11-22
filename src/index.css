@@ -1,0 +1,363 @@
+
+@import url("https://fonts.googleapis.com/css2?family=Alexandria:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+/* =========================
+   Brand Colors
+========================= */
+
+:root {
+  --color-cream: #F2EEDF;
+  --color-green-dark: #11341B;
+  --color-green-light: #A4D561;
+
+  --color-text: var(--color-green-dark);
+  --color-highlight: var(--color-green-light);
+
+  /* هنستخدم صورة الباترن هنا */
+  --pattern-image: url("./assets/vv%20pattern%201.png");
+  --pattern-opacity: 0.07;
+
+  font-family: "DG Baysan", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* =========================
+   Alan Sans
+========================= */
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-Medium.ttf") format("truetype");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-SemiBold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-Bold.ttf") format("truetype");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "Alan Sans";
+  src: url("./assets/font/AlanSans-ExtraBold.ttf") format("truetype");
+  font-weight: 800;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* =========================
+   DG Baysan
+========================= */
+
+@font-face {
+  font-family: "DG Baysan";
+  src: url("./assets/font/DG Baysan Light.ttf") format("truetype");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DG Baysan";
+  src: url("./assets/font/DG Baysan Regular.ttf") format("truetype");
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+@font-face {
+  font-family: "DG Baysan";
+  src: url("./assets/font/DG Baysan Semibold.ttf") format("truetype");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+
+:root {
+  --color-cream: #F2EEDF;
+  --color-green-dark: #11341B;
+  --color-green-light: #A4D561;
+
+  font-family: "DG Baysan", sans-serif;
+  font-synthesis: none;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html {
+  min-height: 100%;
+  background-color: var(--color-cream);
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  font-family: "DG Baysan", sans-serif;
+  background-color: var(--color-cream);
+  background-image: url("./assets/imge/vv pattern 1.png");
+  background-repeat: repeat;
+  background-size: 420px auto;
+  background-attachment: fixed;
+}
+
+/* =========================
+   Global Styles
+========================= */
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  position: relative;
+  isolation: isolate;
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background-color: var(--color-cream);
+  color: var(--color-text);
+  font-family: "DG Baysan", sans-serif;
+}
+
+/* الخلفية المزخرفة */
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background-image: var(--pattern-image);
+  background-repeat: repeat;
+  background-position: center;
+  background-size: 320px;
+  opacity: var(--pattern-opacity);
+}
+
+/* React Root */
+
+#root {
+  min-height: 100vh;
+  position: relative;
+}
+
+/* =========================
+   Hero Text Animation
+========================= */
+
+@keyframes heroReveal {
+  from {
+    opacity: 0;
+    transform: translateY(45px);
+    filter: blur(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    filter: blur(0);
+  }
+}
+
+.hero-item {
+  opacity: 0;
+  animation: heroReveal 1s ease-out forwards;
+}
+
+.hero-delay-1 {
+  animation-delay: 0.25s;
+}
+
+.hero-delay-2 {
+  animation-delay: 0.55s;
+}
+
+.hero-delay-3 {
+  animation-delay: 0.85s;
+}
+
+.hero-delay-4 {
+  animation-delay: 1.15s;
+}
+
+/* =========================
+   Background Zoom
+========================= */
+
+@keyframes heroZoom {
+  from {
+    transform: scale(1);
+  }
+
+  to {
+    transform: scale(1.12);
+  }
+}
+
+.animate-hero-zoom {
+  animation: heroZoom 20s ease-in-out infinite alternate;
+}
+
+/* =========================
+   Floating Light
+========================= */
+
+@keyframes floatLight {
+  0%, 100% {
+    transform: translate(0, 0);
+  }
+
+  50% {
+    transform: translate(35px, -25px);
+  }
+}
+
+.animate-float {
+  animation: floatLight 8s ease-in-out infinite;
+}
+
+.animate-float-delayed {
+  animation: floatLight 10s ease-in-out infinite reverse;
+  animation-delay: 2s;
+}
+
+/* =========================
+   About Page Animations
+========================= */
+
+.about-reveal {
+  opacity: 0;
+  transform: translateY(45px);
+  filter: blur(5px);
+  transition:
+    opacity 0.8s ease,
+    transform 0.8s ease,
+    filter 0.8s ease;
+}
+
+.about-reveal.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+  filter: blur(0);
+}
+
+.about-image-frame {
+  animation: aboutFloat 6s ease-in-out infinite;
+}
+
+@keyframes aboutFloat {
+  0%, 100% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-12px);
+  }
+}
+
+.about-glow {
+  animation: aboutGlow 9s ease-in-out infinite alternate;
+}
+
+@keyframes aboutGlow {
+  from {
+    transform: translate(0, 0) scale(1);
+  }
+
+  to {
+    transform: translate(25px, -20px) scale(1.15);
+  }
+}
+
+.about-card {
+  transition:
+    transform 0.4s ease,
+    box-shadow 0.4s ease;
+}
+
+/* =========================
+   Typewriter
+========================= */
+
+.typewriter-text {
+  display: inline;
+}
+
+.typing-cursor {
+  display: inline-block;
+  width: 3px;
+  height: 0.9em;
+  margin-inline-start: 5px;
+  background: var(--color-highlight);
+  vertical-align: middle;
+  animation: cursorBlink 0.65s steps(2, start) infinite;
+}
+
+@keyframes cursorBlink {
+  to {
+    visibility: hidden;
+  }
+}
+
+/* =========================
+   Reduced Motion
+========================= */
+
+@media (prefers-reduced-motion: reduce) {
+  .hero-item,
+  .animate-hero-zoom,
+  .animate-float,
+  .animate-float-delayed,
+  .about-reveal,
+  .about-image-frame,
+  .about-glow {
+    animation: none;
+    transition: none;
+    opacity: 1;
+    transform: none;
+    filter: none;
+  }
+
+  .typing-cursor {
+    animation: none;
+  }
+}
