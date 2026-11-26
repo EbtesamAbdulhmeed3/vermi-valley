@@ -254,14 +254,10 @@ function Reveal({ children, delay = 0, className = "" }) {
 function Eyebrow({ children, light = false }) {
   return (
     <span
-      className={`inline-flex items-center gap-3 text-sm font-extrabold ${
+      className={`inline-flex items-center text-sm font-black ${
         light ? "text-[#A4D561]" : "text-[#5D852E]"
       }`}
     >
-      <span
-        aria-hidden="true"
-        className={`h-px w-8 ${light ? "bg-[#A4D561]" : "bg-[#5D852E]"}`}
-      />
       {children}
     </span>
   );

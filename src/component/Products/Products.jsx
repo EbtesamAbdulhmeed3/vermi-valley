@@ -32,6 +32,9 @@ const benefitIcons = {
 
 const cartIcon = getProductImage("element-2.svg", "");
 
+// Page pattern
+const vvPattern = getProductImage("vv pattern 1.png", "");
+
 const products = [
   {
     id: "compost",
@@ -82,10 +85,16 @@ const products = [
     id: "chlorella",
     name: "Chlorella",
     nameAr: "كلوريلا",
-    descriptionAr: "ديدان مستخدمة في عملية إنتاج الفيرمي كومبوست.",
-    descriptionEn: "Earthworms used in the vermicomposting process.",
-    purposeAr: "لإنتاج الفيرمي كومبوست",
-    purposeEn: "For vermicomposting",
+    descriptionAr:
+      "مستخلص طحالب الكلوريلا (Chlorella) هو مستخلص طبيعي غني بالعناصر المفيدة للنبات، يساعد على تنشيط الجذور، وتحسين امتصاص العناصر الغذائية، وزيادة اخضرار الأوراق وقوة النبات.",
+    descriptionEn:
+      "Chlorella algae extract is a natural plant nutrient source that helps stimulate roots, improve nutrient absorption, and promote greener leaves and stronger plants.",
+    comparisonAr:
+      "مستخلص طحالب طبيعي يساعد على تنشيط الجذور وتحسين نمو النبات وزيادة اخضرار الأوراق.",
+    comparisonEn:
+      "A natural algae extract that helps stimulate roots, improve plant growth, and promote greener leaves.",
+    purposeAr: "لدعم نمو النبات",
+    purposeEn: "For plant growth support",
     category: "chlorella",
     image: getProductImage(
       "chlorella 1",
@@ -148,20 +157,20 @@ function Products() {
     subtitle: isArabic
       ? "حلول طبيعية ومستدامة لدعم الزراعة وتحسين التربة."
       : "Natural and sustainable solutions for better agriculture and healthier soil.",
-    catalog: isArabic ? "اكتشفي مجموعة منتجاتنا" : "Explore Our Products",
-    details: isArabic ? "اكتشفي المنتج" : "Explore Product",
+    catalog: isArabic ? "اكتشف مجموعة منتجاتنا" : "Explore Our Products",
+    details: isArabic ? "اكتشف المنتج" : "Explore Product",
     back: isArabic ? "العودة إلى المنتجات" : "Back to Products",
     productDetails: isArabic ? "تفاصيل المنتج" : "PRODUCT DETAILS",
-    choosePackage: isArabic ? "اختاري العبوة" : "Choose Package",
+    choosePackage: isArabic ? "اختر العبوة" : "Choose Package",
     quantity: isArabic ? "الكمية" : "Quantity",
     unitPrice: isArabic ? "سعر الوحدة" : "Unit Price",
     subtotal: isArabic ? "الإجمالي" : "Subtotal",
     add: isArabic ? "إضافة إلى الطلب" : "Add to Order",
-    orderNow: isArabic ? "اطلبي عبر واتساب" : "Order via WhatsApp",
+    orderNow: isArabic ? "اطلب عبر واتساب" : "Order via WhatsApp",
     cart: isArabic ? "طلبك" : "Your Order",
     empty: isArabic ? "لسه مفيش منتجات في طلبك" : "Your order is empty",
     emptyDesc: isArabic
-      ? "اختاري المنتج المناسب ليكي واضيفيه إلى طلبك."
+      ? "اختر المنتج المناسب لك وأضفه إلى طلبك."
       : "Choose a product and add it to your order.",
     packages: isArabic ? "عدد العبوات" : "Packages",
     total: isArabic ? "الإجمالي النهائي" : "Grand Total",
@@ -177,10 +186,10 @@ function Products() {
     howTitle: isArabic ? "كيف تطلب منتجاتك؟" : "How to Order",
     howSteps: isArabic
       ? [
-          "اختاري المنتج والعبوة المناسبة.",
-          "حددي الكمية واحسبي إجمالي طلبك.",
-          "أضيفي المنتج إلى طلبك أو اطلبيه مباشرة.",
-          "تواصلي مع فريقنا لتأكيد تفاصيل الطلب.",
+          "اختر المنتج والعبوة المناسبة.",
+          "حدد الكمية واحسب إجمالي طلبك.",
+          "أضف المنتج إلى طلبك أو اطلبه مباشرة.",
+          "تواصل مع فريقنا لتأكيد تفاصيل الطلب.",
         ]
       : [
           "Choose your product and package.",
@@ -193,7 +202,7 @@ function Products() {
       ? [
           {
             q: "هل أقدر أطلب أكتر من منتج؟",
-            a: "أيوه، تقدري تضيفي منتجات وعبوات مختلفة لنفس الطلب.",
+            a: "أيوه، تقدر تضيف منتجات وعبوات مختلفة لنفس الطلب.",
           },
           {
             q: "هل السعر شامل التوصيل؟",
@@ -201,7 +210,7 @@ function Products() {
           },
           {
             q: "إزاي أأكد طلبي؟",
-            a: "ابعتي طلبك عبر واتساب وتابعي مع فريق الشركة لتأكيد التفاصيل.",
+            a: "ابعت طلبك عبر واتساب وتابع مع فريق الشركة لتأكيد التفاصيل.",
           },
         ]
       : [
@@ -218,9 +227,9 @@ function Products() {
             a: "Send your order through WhatsApp and follow up with the team.",
           },
         ],
-    compare: isArabic ? "اختاري المنتج المناسب لاحتياجك" : "Find the product for your needs",
+    compare: isArabic ? "اكتشف المنتج المناسب لاحتياجك" : "Find the product for your needs",
     compareDesc: isArabic
-      ? "تصفحي المنتجات حسب نوعها واستخدامها المعلن."
+      ? "تصفح المنتجات حسب نوعها واستخدامها المعلن."
       : "Browse products by their stated type and use.",
     noResults: isArabic
       ? "مفيش منتجات في التصنيف ده."
@@ -231,7 +240,7 @@ function Products() {
     priceLabel: isArabic ? "يبدأ السعر من" : "Starting price",
     comparison: isArabic ? "مقارنة سريعة بين المنتجات" : "A Quick Product Comparison",
     comparisonDesc: isArabic
-      ? "معلومات مختصرة تساعدك تتعرفي على طبيعة كل منتج."
+      ? "معلومات مختصرة تساعدك تتعرف على طبيعة كل منتج."
       : "A quick overview to help you understand each product.",
     productCol: isArabic ? "المنتج" : "Product",
     useCol: isArabic ? "الوصف والاستخدام" : "Description & Use",
@@ -368,7 +377,7 @@ function Products() {
     );
 
     const message = isArabic
-      ? `مرحباً Vermi Valley، أرغب في طلب المنتجات التالية:\n\n${items
+      ? `مرحباً فيرمي فالي، أرغب في طلب المنتجات التالية:\n\n${items
           .map(
             (item, index) =>
               `${index + 1}. ${item.name}\nالعبوة: ${item.variant}\nالعدد: ${item.quantity}\nسعر الوحدة: ${formatPrice(item.price)} جنيه\nالمجموع: ${formatPrice(item.price * item.quantity)} جنيه`
@@ -432,9 +441,21 @@ function Products() {
     <section
       id="products"
       dir={isArabic ? "rtl" : "ltr"}
-      className="min-h-screen overflow-hidden bg-[#F2EEDF] bg-[radial-gradient(circle_at_1px_1px,rgba(17,52,27,0.045)_1px,transparent_0)] bg-[size:22px_22px] text-[#11341B]"
+      className="relative min-h-screen overflow-hidden bg-[#F2EEDF] bg-[radial-gradient(circle_at_1px_1px,rgba(17,52,27,0.045)_1px,transparent_0)] bg-[size:22px_22px] text-[#11341B]"
     >
-      <div className="mx-auto max-w-7xl px-3 py-8 sm:px-5 sm:py-10 md:px-10 md:py-16">
+      {/* VV background pattern */}
+      {vvPattern && (
+        <div
+          aria-hidden="true"
+          className="pointer-events-none absolute inset-0 z-0 bg-repeat opacity-[0.10]"
+          style={{
+            backgroundImage: `url("${vvPattern}")`,
+            backgroundSize: "260px",
+          }}
+        />
+      )}
+
+      <div className="relative z-10 mx-auto max-w-7xl px-3 pt-24 pb-8 sm:px-5 sm:pt-28 sm:pb-10 md:px-10 md:pt-32 md:pb-16">
         {/* Page heading */}
         <motion.div
           initial={{ opacity: 0, y: 24 }}
@@ -444,7 +465,7 @@ function Products() {
           className="mb-8 text-center sm:mb-12 md:mb-14"
         >
           <span className="text-[10px] font-bold tracking-[0.3em] text-[#A4D561] sm:text-xs">
-            VERMI VALLEY
+            فيرمي فالي
           </span>
           <h1 className="mt-3 text-2xl font-black leading-tight sm:mt-4 sm:text-4xl md:text-6xl">
             {activeProduct ? getProductName(activeProduct) : labels.title}
@@ -476,16 +497,16 @@ function Products() {
               </button>
 
               <div className="grid overflow-hidden rounded-2xl border border-[#11341B]/10 bg-[#FFFDF7] shadow-[0_12px_36px_rgba(17,52,27,0.09)] sm:rounded-[2rem] md:grid-cols-2">
-                <div className="relative min-h-[210px] overflow-hidden bg-[#F2EEDF] sm:min-h-[300px] md:min-h-[560px]">
+                <div className="relative min-h-[260px] overflow-hidden bg-[#F2EEDF] sm:min-h-[300px] md:min-h-[560px]">
                   <img
                     src={activeProduct.detailImage}
                     alt={getProductName(activeProduct)}
-                    className="absolute inset-0 h-full w-full object-cover"
+                    className="absolute inset-0 h-full w-full object-contain md:object-cover"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#11341B]/45 via-transparent to-transparent" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#11341B]/35 via-transparent to-transparent pointer-events-none" />
                   <div className="absolute bottom-4 start-4 text-white sm:bottom-7 sm:start-7">
                     <span className="text-[10px] font-bold tracking-[0.25em] sm:text-xs">
-                      VERMI VALLEY
+                      فيرمي فالي
                     </span>
                     <h2 className="mt-1 text-xl font-black sm:mt-2 sm:text-3xl">
                       {getProductName(activeProduct)}
@@ -630,7 +651,7 @@ function Products() {
               <section className="mb-8 rounded-2xl bg-[#11341B] p-4 text-[#F2EEDF] sm:mb-12 sm:rounded-[2rem] sm:p-6 md:p-9">
                 <div>
                   <span className="text-[10px] font-bold tracking-[0.2em] text-[#A4D561] sm:text-xs">
-                    {isArabic ? "اكتشفي الأنسب لك" : "FIND YOUR MATCH"}
+                    {isArabic ? "اكتشف الأنسب لك" : "FIND YOUR MATCH"}
                   </span>
                   <h2 className="mt-2 text-lg font-black sm:mt-3 sm:text-2xl md:text-3xl">
                     {labels.compare}
@@ -662,7 +683,7 @@ function Products() {
               <div className="mb-5 flex flex-wrap items-end justify-between gap-3 border-b border-[#11341B]/15 pb-4 sm:mb-8 sm:gap-4 sm:pb-5">
                 <div>
                   <span className="text-[10px] font-bold tracking-[0.2em] text-[#A4D561] sm:text-xs">
-                    VERMI VALLEY COLLECTION
+                    فيرمي فالي
                   </span>
                   <h2 className="mt-1 text-base font-black leading-tight sm:mt-2 sm:text-xl md:text-2xl">
                     {labels.catalog}
@@ -700,7 +721,7 @@ function Products() {
                             />
                             <div className="absolute inset-0 bg-gradient-to-t from-[#11341B]/80 via-[#11341B]/10 to-transparent" />
                             <span className="absolute start-1.5 top-1.5 rounded-full border border-white/50 bg-[#F2EEDF]/95 px-1.5 py-0.5 text-[7px] font-extrabold tracking-wider text-[#11341B] sm:start-4 sm:top-4 sm:px-3 sm:py-1.5 sm:text-[10px]">
-                              VERMI VALLEY
+                              فيرمي فالي
                             </span>
                             <div className="absolute inset-x-0 bottom-0 p-2 text-white sm:p-4 md:p-5">
                               <span className="line-clamp-1 text-[8px] font-bold leading-tight text-[#A4D561] sm:text-xs">
@@ -784,7 +805,11 @@ function Products() {
                         >
                           <td className="p-2.5 font-black sm:p-4">{getProductName(item)}</td>
                           <td className="p-2.5 text-[11px] leading-5 text-[#11341B]/65 sm:max-w-xs sm:p-4 sm:text-sm sm:leading-7">
-                            {getProductDescription(item)}
+                            {item.id === "chlorella"
+                              ? isArabic
+                                ? item.comparisonAr
+                                : item.comparisonEn
+                              : getProductDescription(item)}
                           </td>
                           <td className="hidden max-w-xs p-4 leading-7 text-[#11341B]/65 sm:table-cell">
                             {getPackageLabels(item)}
@@ -812,7 +837,7 @@ function Products() {
             <div className="mb-6 flex flex-wrap items-center justify-between gap-3 sm:mb-8 sm:gap-4">
               <div>
                 <span className="text-[10px] font-bold tracking-widest text-[#A4D561] sm:text-xs">
-                  VERMI VALLEY
+                  فيرمي فالي
                 </span>
                 <h2 className="mt-2 text-xl font-black sm:text-3xl">{labels.cart}</h2>
               </div>
@@ -975,6 +1000,10 @@ function Products() {
                       alt=""
                       aria-hidden="true"
                       className="mx-auto h-12 w-12 object-contain sm:h-14 sm:w-14"
+                      style={{
+                        filter:
+                          "brightness(0) saturate(100%) invert(82%) sepia(25%) saturate(650%) hue-rotate(35deg) brightness(95%) contrast(90%)",
+                      }}
                     />
                     <h3 className="mt-3 text-sm font-bold sm:mt-4 sm:text-base">
                       {isArabic ? item.ar : item.en}

@@ -1,4 +1,3 @@
-
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
@@ -46,6 +45,28 @@ const fadeUp = {
   hidden: { opacity: 0, y: 30 },
   visible: { opacity: 1, y: 0 },
 };
+
+/* أيقونة SVG بلون أخضر فاتح (بتستخدم الأيقونة كقالب) */
+function LightGreenIcon({ src, className = "" }) {
+  return (
+    <span
+      aria-hidden="true"
+      className={className}
+      style={{
+        display: "inline-block",
+        backgroundColor: "#A4D561",
+        WebkitMaskImage: `url("${src}")`,
+        maskImage: `url("${src}")`,
+        WebkitMaskRepeat: "no-repeat",
+        maskRepeat: "no-repeat",
+        WebkitMaskPosition: "center",
+        maskPosition: "center",
+        WebkitMaskSize: "contain",
+        maskSize: "contain",
+      }}
+    />
+  );
+}
 
 /* WhatsApp outline icon */
 function WhatsAppIcon() {
@@ -205,10 +226,9 @@ ${formData.message}
                   : "border-[#11341B]/10 bg-white/40 hover:border-[#A4D561]"
               }`}
             >
-              <img
+              <LightGreenIcon
                 src={farmerIcon}
-                alt=""
-                className="mb-5 h-16 w-16 object-contain"
+                className="mb-5 h-16 w-16"
               />
 
               <h3 className="text-2xl font-extrabold">
@@ -234,10 +254,9 @@ ${formData.message}
                   : "border-[#11341B]/10 bg-white/40 hover:border-[#A4D561]"
               }`}
             >
-              <img
+              <LightGreenIcon
                 src={engineerIcon}
-                alt=""
-                className="mb-5 h-16 w-16 object-contain"
+                className="mb-5 h-16 w-16"
               />
 
               <h3 className="text-2xl font-extrabold">

@@ -1,4 +1,3 @@
-
 import { useEffect } from "react";
 import {
   Routes,
@@ -7,6 +6,7 @@ import {
 } from "react-router-dom";
 
 import Navbar from "./component/Navber/Navber";
+import Footer from "./component/Footer/Footer";
 import Home from "./page/Home";
 import About from "./component/About/About";
 import Products from "./component/Products/Products";
@@ -69,7 +69,6 @@ function App() {
       <ScrollToTop />
 
       <Navbar />
-      
 
       <Routes>
         {/* Home */}
@@ -162,6 +161,8 @@ function App() {
         {/* Not Found - 404 */}
         <Route path="*" element={<NotFound />} />
       </Routes>
+
+      <Footer />
     </main>
   );
 }

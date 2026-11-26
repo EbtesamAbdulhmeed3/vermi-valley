@@ -8,7 +8,6 @@ import {
 
 const CREAM = "#F2EEDF";
 const DARK = "#11341B";
-const LIGHT = "#A4D561";
 const ACCENT_TEXT = "#5E9A2A";
 const SHOW_EXTRAS = true;
 
@@ -144,55 +143,6 @@ function Hero() {
           background: `linear-gradient(to bottom, ${CREAM}00 0%, ${CREAM}B3 55%, ${CREAM} 100%)`,
         }}
       />
-
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 600 500"
-        preserveAspectRatio="none"
-        className={`pointer-events-none absolute top-0 -z-[5] hidden h-[62%] w-[38%] lg:block ${
-          isArabic ? "left-[30%] -scale-x-100" : "right-[22%]"
-        }`}
-      >
-        <path
-          d="M0 500 C20 330 140 250 300 190 C460 130 520 60 600 0 L220 0 C260 60 170 140 90 250 C40 320 10 400 0 500Z"
-          fill={LIGHT}
-          opacity="0.55"
-        />
-      </svg>
-
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 400 420"
-        preserveAspectRatio="none"
-        className={`pointer-events-none absolute bottom-0 z-[1] hidden h-[48%] w-[24%] lg:block ${
-          isArabic ? "left-0 -scale-x-100" : "right-0"
-        }`}
-      >
-        <path
-          d="M400 0 C330 60 240 120 170 230 C120 310 90 380 60 420 L400 420Z"
-          fill={LIGHT}
-          opacity="0.9"
-        />
-      </svg>
-
-      <svg
-        aria-hidden="true"
-        viewBox="0 0 700 220"
-        preserveAspectRatio="none"
-        className={`pointer-events-none absolute bottom-0 z-[1] hidden h-[16%] w-[60%] sm:block sm:h-[20%] lg:w-[34%] ${
-          isArabic ? "right-0 -scale-x-100" : "left-0"
-        }`}
-      >
-        <path
-          d="M0 40 C60 110 160 150 300 150 C420 150 500 170 560 220 L0 220Z"
-          fill={DARK}
-        />
-        <path
-          d="M0 0 C90 60 180 110 340 120 C240 110 120 90 0 40Z"
-          fill={LIGHT}
-          opacity="0.45"
-        />
-      </svg>
 
       <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 items-center px-5 pb-32 pt-[44svh] sm:px-10 sm:pt-[44svh] lg:px-16 lg:pb-40 lg:pt-36 xl:px-20">
         <div className="flex w-full min-w-0 flex-col items-start lg:max-w-[58%]">

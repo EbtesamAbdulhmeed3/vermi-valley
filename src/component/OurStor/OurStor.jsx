@@ -1,7 +1,6 @@
 import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../component/Context/languge";
-import pattern from "../../assets/imge/vv pattern 1.png";
 import locationImage from "../../assets/imge/loction9.jpg";
 
 // حركة ظهور الكلمات بالتتابع
@@ -138,18 +137,6 @@ export default function OurStory() {
       dir={isArabic ? "rtl" : "ltr"}
       className="relative isolate overflow-hidden bg-[#F2EEDF] pt-8 pb-14 md:pt-10 md:pb-20"
     >
-      {/* خلفية البراند فقط بدون دوائر أو زخارف إضافية */}
-      <div
-        aria-hidden="true"
-        className="pointer-events-none absolute inset-0 -z-10"
-        style={{
-          backgroundImage: `url("${pattern}")`,
-          backgroundRepeat: "repeat",
-          backgroundSize: "380px",
-          opacity: 0.07,
-        }}
-      />
-
       <div className="relative mx-auto max-w-7xl px-5 md:px-10">
         {/* عنوان السيكشن */}
         <motion.div

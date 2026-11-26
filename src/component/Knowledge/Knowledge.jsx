@@ -1,3 +1,4 @@
+
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
@@ -67,7 +68,7 @@ const articles = [
       "A product's name alone is not enough to judge its quality or determine the right quantity. Consider your crop's needs and soil conditions, and consult a specialist before deciding on a fertilization program.",
     action: "اسأل عن المنتج المناسب",
     enAction: "Ask About the Right Product",
-    link: "/recommendations",
+    link: "/consult-engineer",
   },
   {
     id: 3,
@@ -137,7 +138,7 @@ const articles = [
       "After receiving the details, the engineer may ask for more information before providing guidance.",
     action: "ابعت سؤالك للمهندس",
     enAction: "Ask the Engineer",
-    link: "/recommendations",
+    link: "/consult-engineer",
   },
   {
     id: 5,
@@ -204,7 +205,7 @@ const articles = [
       "The product and its price alone do not determine the right dosage. If you have a specific concern, share the details with a Vermi Valley engineer.",
     action: "استشر مهندسًا زراعيًا",
     enAction: "Consult an Agricultural Engineer",
-    link: "/recommendations",
+    link: "/consult-engineer",
   },
 ];
 
@@ -243,6 +244,7 @@ const categoryMeta = {
 
 function CategoryBadge({ category, label, className = "" }) {
   const meta = categoryMeta[category] || categoryMeta["المنتجات"];
+
   return (
     <span
       className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ${meta.tint} ${className}`}
@@ -274,7 +276,15 @@ function readingMinutes(article) {
 
 /* ---------- كارت المقال ---------- */
 
-function ArticleCard({ article, index, featured, isArabic, t, minutesLabel, onOpen }) {
+function ArticleCard({
+  article,
+  index,
+  featured,
+  isArabic,
+  t,
+  minutesLabel,
+  onOpen,
+}) {
   const arrowMove = isArabic
     ? "group-hover:-translate-x-1"
     : "group-hover:translate-x-1";
@@ -297,6 +307,7 @@ function ArticleCard({ article, index, featured, isArabic, t, minutesLabel, onOp
           category={article.category}
           label={t(article.category, article.enCategory)}
         />
+
         <span
           className={`text-xs font-bold ${
             featured ? "text-[#A4D561]" : "text-[#11341B]/55"
@@ -341,7 +352,10 @@ function ArticleCard({ article, index, featured, isArabic, t, minutesLabel, onOp
         aria-label={t(`اقرأ مقال ${article.title}`, `Read ${article.enTitle}`)}
       >
         <span>{t("اقرأ المعلومة", "Read article")}</span>
-        <span className={`text-xl transition-transform duration-300 ${arrowMove}`}>
+
+        <span
+          className={`text-xl transition-transform duration-300 ${arrowMove}`}
+        >
           {isArabic ? "←" : "→"}
         </span>
       </button>
@@ -349,7 +363,7 @@ function ArticleCard({ article, index, featured, isArabic, t, minutesLabel, onOp
   );
 }
 
-/* ---------- قارئ المقال (بيتعرض برّه الصفحة فوق النافبار) ---------- */
+/* ---------- قارئ المقال ---------- */
 
 function ArticleReader({
   article,
@@ -367,7 +381,6 @@ function ArticleReader({
   const prev = index > 0 ? list[index - 1] : null;
   const next = index >= 0 && index < list.length - 1 ? list[index + 1] : null;
 
-  // لما المقال يتغير يرجع لأول المقال
   useEffect(() => {
     scrollRef.current?.scrollTo({ top: 0 });
     setProgress(0);
@@ -414,6 +427,7 @@ function ArticleReader({
                 category={article.category}
                 label={t(article.category, article.enCategory)}
               />
+
               <span className="text-xs font-bold text-[#11341B]/55">
                 {minutesLabel(readingMinutes(article))}
               </span>
@@ -463,6 +477,7 @@ function ArticleReader({
             <h3 className="mb-4 text-lg font-extrabold">
               {t("خلّي بالك من النقاط دي", "Key points")}
             </h3>
+
             <ol className="mb-9 space-y-3">
               {points.map((point, i) => (
                 <li
@@ -472,6 +487,7 @@ function ArticleReader({
                   <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#11341B] text-sm font-extrabold text-[#A4D561]">
                     {i + 1}
                   </span>
+
                   <span className="pt-0.5 text-sm leading-7 sm:text-base">
                     {point}
                   </span>
@@ -483,6 +499,7 @@ function ArticleReader({
               <h3 className="mb-2 text-base font-extrabold sm:text-lg">
                 {t("قبل ما تستخدم", "Before you act")}
               </h3>
+
               <p className="text-sm leading-8 text-[#11341B]/85 sm:text-base sm:leading-9">
                 {t(article.conclusion, article.enConclusion)}
               </p>
@@ -500,6 +517,7 @@ function ArticleReader({
                     <span className="text-xs font-bold text-[#5D852E]">
                       {prevArrow} {t("السابق", "Previous")}
                     </span>
+
                     <span className="mt-1 line-clamp-2 block text-sm font-extrabold leading-6">
                       {t(prev.title, prev.enTitle)}
                     </span>
@@ -517,6 +535,7 @@ function ArticleReader({
                     <span className="text-xs font-bold text-[#5D852E]">
                       {t("التالي", "Next")} {nextArrow}
                     </span>
+
                     <span className="mt-1 line-clamp-2 block text-sm font-extrabold leading-6">
                       {t(next.title, next.enTitle)}
                     </span>
