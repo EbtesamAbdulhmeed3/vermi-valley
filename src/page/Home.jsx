@@ -6,7 +6,7 @@ import OurStory from "../component/OurStor/OurStor";
 import ProductionJourney from "../component/ProductionJourney/ProductionJourney";
 import HomeIntro from "../component/HomeIntro/HomeIntro";
 // Images
-import pattern from "../assets/imge/VV pattern 1.png";
+import pattern from "../assets/imge/vv pattern 1.png";
 import recycleIcon from "../assets/imge/recycle.svg";
 import soilIcon from "../assets/imge/element -2.svg";
 import globeIcon from "../assets/imge/globe.svg";
