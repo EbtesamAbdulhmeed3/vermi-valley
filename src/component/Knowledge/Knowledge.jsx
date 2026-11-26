@@ -1,7 +1,8 @@
-
-import { useMemo, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { createPortal } from "react-dom";
 import { AnimatePresence, motion } from "framer-motion";
 import { useLanguage } from "../Context/languge";
+import heroPattern from "../../assets/imge/vv pattern 1.png";
 
 const articles = [
   {
@@ -144,8 +145,7 @@ const articles = [
     enCategory: "Vermi",
     title: "رحلة المخلفات لحد الفيرمي كومبوست",
     enTitle: "From Organic Waste to Vermicompost",
-    description:
-      "جولة مبسطة في مراحل تجهيز المخلفات وتغذية الديدان.",
+    description: "جولة مبسطة في مراحل تجهيز المخلفات وتغذية الديدان.",
     enDescription:
       "A simple look at preparing organic waste and feeding the worms.",
     intro:
@@ -217,54 +217,402 @@ const categories = [
   { ar: "أسئلة المزارعين", en: "Farmers' Questions" },
 ];
 
+// لون وأيقونة لكل تصنيف
+const categoryMeta = {
+  الفيرمي: {
+    tint: "bg-[#A4D561]/35 text-[#315B27]",
+    paths: ["M5 19C5 10 10 5 19 5c0 9-5 14-14 14Z", "M5 19 13 11"],
+  },
+  "التسميد العضوي": {
+    tint: "bg-[#E8D9A8]/60 text-[#7A5C14]",
+    paths: ["M12 3c3.5 4 6 7 6 10a6 6 0 0 1-12 0c0-3 2.5-6 6-10Z"],
+  },
+  المنتجات: {
+    tint: "bg-[#11341B]/10 text-[#11341B]",
+    paths: ["M3 7.5 12 3l9 4.5v9L12 21l-9-4.5v-9Z", "M3 7.5 12 12l9-4.5M12 12v9"],
+  },
+  "استخدامات وتوصيات": {
+    tint: "bg-[#CFE3B0]/70 text-[#3E6B1E]",
+    paths: ["M5 12l4 4 10-10"],
+  },
+  "أسئلة المزارعين": {
+    tint: "bg-[#F4D9C2]/70 text-[#8A4B1F]",
+    paths: ["M21 12a8 8 0 0 1-11.6 7.1L4 20l1-4.6A8 8 0 1 1 21 12Z"],
+  },
+};
+
+function CategoryBadge({ category, label, className = "" }) {
+  const meta = categoryMeta[category] || categoryMeta["المنتجات"];
+  return (
+    <span
+      className={`inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-bold ${meta.tint} ${className}`}
+    >
+      <svg
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="1.9"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        className="h-4 w-4"
+        aria-hidden="true"
+      >
+        {meta.paths.map((d) => (
+          <path key={d} d={d} />
+        ))}
+      </svg>
+      {label}
+    </span>
+  );
+}
+
+function readingMinutes(article) {
+  const text = [article.intro, ...article.points, article.conclusion].join(" ");
+  const words = text.split(/\s+/).filter(Boolean).length;
+  return Math.max(1, Math.ceil(words / 150));
+}
+
+/* ---------- كارت المقال ---------- */
+
+function ArticleCard({ article, index, featured, isArabic, t, minutesLabel, onOpen }) {
+  const arrowMove = isArabic
+    ? "group-hover:-translate-x-1"
+    : "group-hover:translate-x-1";
+
+  return (
+    <motion.article
+      layout
+      initial={{ opacity: 0, y: 22 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: 12, scale: 0.97 }}
+      transition={{ duration: 0.35, delay: index * 0.045 }}
+      className={`group flex flex-col overflow-hidden rounded-3xl border p-5 shadow-sm transition duration-300 hover:-translate-y-1 hover:shadow-xl sm:p-6 ${
+        featured
+          ? "min-h-[300px] border-[#11341B] bg-[#11341B] text-[#F2EEDF] sm:col-span-2 sm:p-8"
+          : "min-h-[270px] border-[#11341B]/10 bg-white/55 backdrop-blur-sm hover:border-[#A4D561] hover:bg-[#A4D561]/15"
+      }`}
+    >
+      <div className="mb-5 flex items-center justify-between gap-3">
+        <CategoryBadge
+          category={article.category}
+          label={t(article.category, article.enCategory)}
+        />
+        <span
+          className={`text-xs font-bold ${
+            featured ? "text-[#A4D561]" : "text-[#11341B]/55"
+          }`}
+        >
+          {minutesLabel(readingMinutes(article))}
+        </span>
+      </div>
+
+      {featured && (
+        <span className="mb-3 text-sm font-extrabold text-[#A4D561]">
+          {t("مقال مميز", "Featured article")}
+        </span>
+      )}
+
+      <h2
+        className={`mb-3 font-extrabold leading-relaxed ${
+          featured ? "text-2xl sm:text-4xl sm:leading-[1.4]" : "text-xl"
+        }`}
+      >
+        {t(article.title, article.enTitle)}
+      </h2>
+
+      <p
+        className={`mb-7 flex-1 text-sm leading-7 ${
+          featured
+            ? "max-w-2xl text-[#F2EEDF]/80 sm:text-base sm:leading-8"
+            : "text-[#11341B]/70"
+        }`}
+      >
+        {t(article.description, article.enDescription)}
+      </p>
+
+      <button
+        type="button"
+        onClick={() => onOpen(article)}
+        className={`flex w-full items-center justify-between border-t pt-4 text-sm font-extrabold transition ${
+          featured
+            ? "border-[#F2EEDF]/20 text-[#F2EEDF] hover:text-[#A4D561]"
+            : "border-[#11341B]/10 text-[#11341B] hover:text-[#5D852E]"
+        }`}
+        aria-label={t(`اقرأ مقال ${article.title}`, `Read ${article.enTitle}`)}
+      >
+        <span>{t("اقرأ المعلومة", "Read article")}</span>
+        <span className={`text-xl transition-transform duration-300 ${arrowMove}`}>
+          {isArabic ? "←" : "→"}
+        </span>
+      </button>
+    </motion.article>
+  );
+}
+
+/* ---------- قارئ المقال (بيتعرض برّه الصفحة فوق النافبار) ---------- */
+
+function ArticleReader({
+  article,
+  list,
+  isArabic,
+  t,
+  minutesLabel,
+  onClose,
+  onSelect,
+}) {
+  const scrollRef = useRef(null);
+  const [progress, setProgress] = useState(0);
+
+  const index = list.findIndex((a) => a.id === article.id);
+  const prev = index > 0 ? list[index - 1] : null;
+  const next = index >= 0 && index < list.length - 1 ? list[index + 1] : null;
+
+  // لما المقال يتغير يرجع لأول المقال
+  useEffect(() => {
+    scrollRef.current?.scrollTo({ top: 0 });
+    setProgress(0);
+  }, [article.id]);
+
+  const onScroll = (event) => {
+    const el = event.currentTarget;
+    const max = el.scrollHeight - el.clientHeight;
+    setProgress(max > 0 ? Math.min(1, el.scrollTop / max) : 0);
+  };
+
+  const points = isArabic ? article.points : article.enPoints;
+  const prevArrow = isArabic ? "→" : "←";
+  const nextArrow = isArabic ? "←" : "→";
+
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+      transition={{ duration: 0.25 }}
+      dir={isArabic ? "rtl" : "ltr"}
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose();
+      }}
+      className="fixed inset-0 z-[200] flex items-end justify-center bg-[#11341B]/60 backdrop-blur-sm sm:items-center sm:p-6"
+      role="presentation"
+    >
+      <motion.section
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="knowledge-article-title"
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        exit={{ opacity: 0, y: 30 }}
+        transition={{ type: "spring", stiffness: 280, damping: 28 }}
+        className="flex h-[94dvh] w-full flex-col overflow-hidden rounded-t-[1.75rem] bg-[#F2EEDF] text-[#11341B] shadow-2xl shadow-black/30 sm:h-[min(88dvh,860px)] sm:max-w-3xl sm:rounded-[2rem]"
+      >
+        {/* Header ثابت */}
+        <div className="shrink-0 border-b border-[#11341B]/10">
+          <div className="flex items-center justify-between gap-3 px-5 py-4 sm:px-8">
+            <div className="flex min-w-0 flex-wrap items-center gap-x-3 gap-y-1">
+              <CategoryBadge
+                category={article.category}
+                label={t(article.category, article.enCategory)}
+              />
+              <span className="text-xs font-bold text-[#11341B]/55">
+                {minutesLabel(readingMinutes(article))}
+              </span>
+            </div>
+
+            <button
+              type="button"
+              onClick={onClose}
+              className="flex h-10 w-10 shrink-0 items-center justify-center rounded-full border border-[#11341B]/15 bg-white/60 text-xl font-bold transition hover:border-[#11341B] hover:bg-[#A4D561]/40"
+              aria-label={t("إغلاق المقال", "Close article")}
+            >
+              ×
+            </button>
+          </div>
+
+          <div className="h-1 bg-[#11341B]/10">
+            <div
+              className="h-full bg-[#5D852E] transition-[width] duration-150"
+              style={{ width: `${progress * 100}%` }}
+            />
+          </div>
+        </div>
+
+        {/* المحتوى */}
+        <div
+          ref={scrollRef}
+          onScroll={onScroll}
+          className="flex-1 overflow-y-auto overscroll-contain px-5 py-7 sm:px-10 sm:py-10"
+        >
+          <motion.div
+            key={article.id}
+            initial={{ opacity: 0, y: 12 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.3 }}
+          >
+            <h2
+              id="knowledge-article-title"
+              className="mb-6 text-2xl font-black leading-[1.5] sm:text-4xl sm:leading-[1.45]"
+            >
+              {t(article.title, article.enTitle)}
+            </h2>
+
+            <p className="mb-9 border-s-4 border-[#A4D561] ps-4 text-base font-semibold leading-8 text-[#11341B]/90 sm:text-lg sm:leading-9">
+              {t(article.intro, article.enIntro)}
+            </p>
+
+            <h3 className="mb-4 text-lg font-extrabold">
+              {t("خلّي بالك من النقاط دي", "Key points")}
+            </h3>
+            <ol className="mb-9 space-y-3">
+              {points.map((point, i) => (
+                <li
+                  key={i}
+                  className="flex items-start gap-4 rounded-2xl border border-[#11341B]/10 bg-white/60 p-4"
+                >
+                  <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#11341B] text-sm font-extrabold text-[#A4D561]">
+                    {i + 1}
+                  </span>
+                  <span className="pt-0.5 text-sm leading-7 sm:text-base">
+                    {point}
+                  </span>
+                </li>
+              ))}
+            </ol>
+
+            <div className="rounded-2xl border border-[#5D852E]/20 bg-[#A4D561]/25 p-5 sm:p-6">
+              <h3 className="mb-2 text-base font-extrabold sm:text-lg">
+                {t("قبل ما تستخدم", "Before you act")}
+              </h3>
+              <p className="text-sm leading-8 text-[#11341B]/85 sm:text-base sm:leading-9">
+                {t(article.conclusion, article.enConclusion)}
+              </p>
+            </div>
+
+            {/* المقال السابق / التالي */}
+            {list.length > 1 && (
+              <div className="mt-10 grid grid-cols-2 gap-3">
+                {prev ? (
+                  <button
+                    type="button"
+                    onClick={() => onSelect(prev)}
+                    className="rounded-2xl border border-[#11341B]/10 bg-white/60 p-4 text-start transition hover:border-[#A4D561] hover:bg-[#A4D561]/20"
+                  >
+                    <span className="text-xs font-bold text-[#5D852E]">
+                      {prevArrow} {t("السابق", "Previous")}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-sm font-extrabold leading-6">
+                      {t(prev.title, prev.enTitle)}
+                    </span>
+                  </button>
+                ) : (
+                  <span />
+                )}
+
+                {next ? (
+                  <button
+                    type="button"
+                    onClick={() => onSelect(next)}
+                    className="rounded-2xl border border-[#11341B]/10 bg-white/60 p-4 text-end transition hover:border-[#A4D561] hover:bg-[#A4D561]/20"
+                  >
+                    <span className="text-xs font-bold text-[#5D852E]">
+                      {t("التالي", "Next")} {nextArrow}
+                    </span>
+                    <span className="mt-1 line-clamp-2 block text-sm font-extrabold leading-6">
+                      {t(next.title, next.enTitle)}
+                    </span>
+                  </button>
+                ) : (
+                  <span />
+                )}
+              </div>
+            )}
+          </motion.div>
+        </div>
+
+        {/* زرار الإجراء ثابت تحت */}
+        <div className="shrink-0 border-t border-[#11341B]/10 bg-[#F2EEDF] px-5 py-4 sm:px-8">
+          <a
+            href={article.link}
+            className="inline-flex w-full items-center justify-center gap-3 rounded-xl bg-[#11341B] px-5 py-4 text-center text-sm font-bold text-[#F2EEDF] transition hover:bg-[#A4D561] hover:text-[#11341B] sm:w-auto sm:px-8"
+          >
+            {t(article.action, article.enAction)}
+            <span>{isArabic ? "←" : "→"}</span>
+          </a>
+        </div>
+      </motion.section>
+    </motion.div>
+  );
+}
+
+/* ---------- الصفحة ---------- */
+
 export default function Knowledge() {
   const { isArabic } = useLanguage();
-  const [search, setSearch] = useState("");
+
   const [activeCategory, setActiveCategory] = useState("الكل");
   const [selectedArticle, setSelectedArticle] = useState(null);
 
-  const filteredArticles = useMemo(() => {
-    const query = search.trim().toLowerCase();
-
-    return articles.filter((article) => {
-      const categoryMatch =
-        activeCategory === "الكل" || article.category === activeCategory;
-
-      const searchMatch =
-        !query ||
-        [
-          article.title,
-          article.description,
-          article.category,
-          article.enTitle,
-          article.enDescription,
-          article.enCategory,
-        ]
-          .join(" ")
-          .toLowerCase()
-          .includes(query);
-
-      return categoryMatch && searchMatch;
-    });
-  }, [search, activeCategory]);
-
   const t = (ar, en) => (isArabic ? ar : en);
+
+  const minutesLabel = (m) =>
+    isArabic
+      ? m === 1
+        ? "قراءة دقيقة"
+        : m === 2
+          ? "قراءة دقيقتين"
+          : `قراءة ${m} دقائق`
+      : `${m} min read`;
+
+  const filteredArticles = articles.filter(
+    (article) =>
+      activeCategory === "الكل" || article.category === activeCategory
+  );
+
+  // Lock page scrolling while the article reader is open.
+  useEffect(() => {
+    if (!selectedArticle) return;
+
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+
+    const handleKeyDown = (event) => {
+      if (event.key === "Escape") {
+        setSelectedArticle(null);
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyDown);
+
+    return () => {
+      document.body.style.overflow = previousOverflow;
+      window.removeEventListener("keydown", handleKeyDown);
+    };
+  }, [selectedArticle]);
 
   return (
     <main
       dir={isArabic ? "rtl" : "ltr"}
-      className="min-h-screen bg-[#F2EEDF] text-[#11341B]"
+      className="relative isolate min-h-screen overflow-hidden bg-[#F2EEDF] text-[#11341B]"
     >
-      {/* Hero */}
-      <section className="relative overflow-hidden px-5 pb-16 pt-28 sm:px-8 sm:pb-24 sm:pt-36">
-        <div className="pointer-events-none absolute -left-24 -top-20 h-72 w-72 rounded-full bg-[#A4D561]/20 blur-3xl" />
-        <div className="pointer-events-none absolute -bottom-24 -right-20 h-72 w-72 rounded-full bg-[#A4D561]/25 blur-3xl" />
+      {/* Full Page Brand Pattern */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-[-1]"
+        style={{
+          backgroundImage: `url(${heroPattern})`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "250px",
+          opacity: 0.13,
+        }}
+      />
 
+      {/* Hero */}
+      <section className="relative px-5 pb-14 pt-28 sm:px-8 sm:pb-20 sm:pt-36">
         <div className="relative mx-auto max-w-5xl text-center">
           <motion.span
             initial={{ opacity: 0, y: 15 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-5 inline-flex rounded-full border border-[#11341B]/10 bg-[#A4D561]/25 px-5 py-2 text-sm font-bold"
+            className="mb-5 inline-flex rounded-full border border-[#11341B]/10 bg-[#A4D561]/30 px-5 py-2 text-sm font-bold"
           >
             {t("المعرفة تبدأ من هنا", "Knowledge starts here")}
           </motion.span>
@@ -292,203 +640,78 @@ export default function Knowledge() {
         </div>
       </section>
 
-      {/* Search and categories */}
-      <section className="px-5 pb-12 sm:px-8">
+      {/* Categories */}
+      <section className="px-5 pb-14 sm:px-8">
         <div className="mx-auto max-w-6xl">
-          <div className="mx-auto mb-8 max-w-2xl">
-            <label className="mb-3 block text-sm font-bold">
-              {t("بتدور على معلومة إيه؟", "What are you looking for?")}
-            </label>
-            <div className="flex gap-2 rounded-2xl border border-[#11341B]/10 bg-white/60 p-2 shadow-sm">
-              <input
-                type="search"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                placeholder={t("اكتب كلمة للبحث...", "Type to search...")}
-                className="min-w-0 flex-1 bg-transparent px-4 py-3 text-sm outline-none placeholder:text-[#11341B]/40"
-              />
-              <button
-                type="button"
-                className="rounded-xl bg-[#11341B] px-6 py-3 text-sm font-bold text-[#F2EEDF] transition hover:bg-[#A4D561] hover:text-[#11341B]"
-              >
-                {t("دوّر", "Search")}
-              </button>
+          <div className="mb-9 -mx-5 overflow-x-auto px-5 pb-2 sm:mx-0 sm:px-0">
+            <div className="flex w-max min-w-full justify-start gap-2 sm:w-auto sm:flex-wrap sm:justify-center">
+              {categories.map((category) => {
+                const active = activeCategory === category.ar;
+
+                return (
+                  <button
+                    key={category.ar}
+                    type="button"
+                    onClick={() => setActiveCategory(category.ar)}
+                    className={`shrink-0 rounded-full border px-4 py-2.5 text-sm font-bold transition duration-300 ${
+                      active
+                        ? "border-[#11341B] bg-[#11341B] text-[#F2EEDF] shadow-md shadow-[#11341B]/10"
+                        : "border-[#11341B]/15 bg-white/55 text-[#11341B] hover:border-[#5D852E] hover:bg-[#A4D561]/30"
+                    }`}
+                  >
+                    {t(category.ar, category.en)}
+                  </button>
+                );
+              })}
             </div>
           </div>
 
-          <div className="mb-10 flex flex-wrap justify-center gap-2">
-            {categories.map((category) => {
-              const active = activeCategory === category.ar;
-
-              return (
-                <button
-                  key={category.ar}
-                  type="button"
-                  onClick={() => {
-                    setActiveCategory(category.ar);
-                    setSelectedArticle(null);
-                  }}
-                  className={`rounded-full border px-4 py-2.5 text-sm font-bold transition ${
-                    active
-                      ? "border-[#11341B] bg-[#11341B] text-[#F2EEDF]"
-                      : "border-[#11341B]/15 bg-white/40 text-[#11341B] hover:border-[#11341B] hover:bg-[#A4D561]/30"
-                  }`}
-                >
-                  {t(category.ar, category.en)}
-                </button>
-              );
-            })}
-          </div>
-
-          {/* Articles grid */}
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {filteredArticles.map((article, index) => (
-              <motion.article
-                key={article.id}
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.06 }}
-                className={`group flex flex-col rounded-3xl border p-6 transition duration-300 hover:-translate-y-1 hover:shadow-xl ${
-                  selectedArticle?.id === article.id
-                    ? "border-[#11341B] bg-[#A4D561]/20"
-                    : "border-[#11341B]/10 bg-white/55 hover:border-[#A4D561]"
-                }`}
-              >
-                <div className="mb-5 flex items-center justify-between">
-                  <span className="rounded-full bg-[#A4D561]/35 px-3 py-1.5 text-xs font-bold">
-                    {t(article.category, article.enCategory)}
-                  </span>
-                  <span className="flex h-10 w-10 items-center justify-center rounded-full bg-[#11341B] text-lg text-[#A4D561]">
-                    {String(article.id).padStart(2, "0")}
-                  </span>
-                </div>
-
-                <h2 className="mb-3 text-xl font-extrabold leading-relaxed">
-                  {t(article.title, article.enTitle)}
-                </h2>
-
-                <p className="mb-7 flex-1 text-sm leading-7 text-[#11341B]/65">
-                  {t(article.description, article.enDescription)}
-                </p>
-
-                <button
-                  type="button"
-                  onClick={() =>
-                    setSelectedArticle(
-                      selectedArticle?.id === article.id ? null : article
-                    )
-                  }
-                  className="flex items-center justify-between border-t border-[#11341B]/10 pt-4 text-sm font-extrabold transition hover:text-[#557D2D]"
-                >
-                  <span>
-                    {selectedArticle?.id === article.id
-                      ? t("إغلاق المقال", "Close article")
-                      : t("اقرأ المعلومة", "Read article")}
-                  </span>
-                  <span className="text-xl transition group-hover:translate-x-[-4px]">
-                    {isArabic ? "←" : "→"}
-                  </span>
-                </button>
-              </motion.article>
-            ))}
-          </div>
+          {/* Articles — أول مقال مميز في تصنيف "الكل" */}
+          <motion.div layout className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+            <AnimatePresence mode="popLayout">
+              {filteredArticles.map((article, index) => (
+                <ArticleCard
+                  key={article.id}
+                  article={article}
+                  index={index}
+                  featured={activeCategory === "الكل" && index === 0}
+                  isArabic={isArabic}
+                  t={t}
+                  minutesLabel={minutesLabel}
+                  onOpen={setSelectedArticle}
+                />
+              ))}
+            </AnimatePresence>
+          </motion.div>
 
           {filteredArticles.length === 0 && (
-            <div className="rounded-3xl border border-[#11341B]/10 bg-white/50 px-6 py-14 text-center">
+            <div className="rounded-3xl border border-[#11341B]/10 bg-white/55 px-6 py-14 text-center">
               <p className="text-lg font-bold">
-                {t("ملقيناش موضوع مطابق للبحث.", "No matching topics found.")}
+                {t(
+                  "مفيش موضوعات في التصنيف ده حاليًا.",
+                  "No topics in this category yet."
+                )}
               </p>
+
               <button
                 type="button"
-                onClick={() => {
-                  setSearch("");
-                  setActiveCategory("الكل");
-                }}
-                className="mt-4 font-bold text-[#557D2D] underline"
+                onClick={() => setActiveCategory("الكل")}
+                className="mt-4 font-bold text-[#557D2D] underline underline-offset-4"
               >
                 {t("اعرض كل الموضوعات", "Show all topics")}
               </button>
             </div>
           )}
-
-          {/* Selected article */}
-          <AnimatePresence mode="wait">
-            {selectedArticle && (
-              <motion.section
-                key={selectedArticle.id}
-                initial={{ opacity: 0, y: 18 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: 12 }}
-                className="mt-10 scroll-mt-28 rounded-3xl border border-[#11341B]/10 bg-white/65 p-6 shadow-sm sm:p-10"
-              >
-                <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-                  <span className="rounded-full bg-[#A4D561]/35 px-4 py-2 text-sm font-bold">
-                    {t(
-                      selectedArticle.category,
-                      selectedArticle.enCategory
-                    )}
-                  </span>
-                  <button
-                    type="button"
-                    onClick={() => setSelectedArticle(null)}
-                    className="rounded-full border border-[#11341B]/15 px-4 py-2 text-sm font-bold hover:bg-[#A4D561]/25"
-                  >
-                    {t("إغلاق ×", "Close ×")}
-                  </button>
-                </div>
-
-                <h2 className="mb-6 text-2xl font-black leading-relaxed sm:text-3xl">
-                  {t(selectedArticle.title, selectedArticle.enTitle)}
-                </h2>
-
-                <p className="mb-8 text-base leading-9 text-[#11341B]/80">
-                  {t(selectedArticle.intro, selectedArticle.enIntro)}
-                </p>
-
-                <div className="mb-8 rounded-2xl bg-[#A4D561]/15 p-6">
-                  <h3 className="mb-4 text-lg font-extrabold">
-                    {t("خلّي بالك من النقاط دي", "Key points")}
-                  </h3>
-                  <ul className="space-y-3">
-                    {(isArabic
-                      ? selectedArticle.points
-                      : selectedArticle.enPoints
-                    ).map((point, index) => (
-                      <li key={index} className="flex gap-3 leading-7">
-                        <span className="mt-2 h-2.5 w-2.5 shrink-0 rounded-full bg-[#11341B]" />
-                        <span>{point}</span>
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <p className="mb-8 text-base leading-9 text-[#11341B]/80">
-                  {t(
-                    selectedArticle.conclusion,
-                    selectedArticle.enConclusion
-                  )}
-                </p>
-
-                <a
-                  href={selectedArticle.link}
-                  className="inline-flex items-center gap-3 rounded-xl bg-[#11341B] px-6 py-4 text-sm font-bold text-[#F2EEDF] transition hover:bg-[#A4D561] hover:text-[#11341B]"
-                >
-                  {t(selectedArticle.action, selectedArticle.enAction)}
-                  <span>{isArabic ? "←" : "→"}</span>
-                </a>
-              </motion.section>
-            )}
-          </AnimatePresence>
         </div>
       </section>
 
-      {/* General notice */}
-      <section className="px-5 pb-20 sm:px-8">
-        <div className="mx-auto max-w-6xl rounded-3xl bg-[#11341B] px-6 py-8 text-center text-[#F2EEDF] sm:px-10">
+      {/* General Notice */}
+      <section className="px-5 pb-16 sm:px-8 sm:pb-20">
+        <div className="mx-auto max-w-6xl rounded-3xl bg-[#11341B] px-6 py-8 text-center text-[#F2EEDF] shadow-lg shadow-[#11341B]/10 sm:px-10 sm:py-10">
           <h2 className="mb-3 text-xl font-extrabold">
             {t("معلومة مهمة قبل الاستخدام", "Important Note")}
           </h2>
+
           <p className="mx-auto max-w-4xl text-sm leading-8 text-[#F2EEDF]/80 sm:text-base">
             {t(
               "المحتوى للتوعية العامة، ولا يغني عن فحص حالة الأرض أو مراجعة مهندس زراعي. التوصية والكمية تختلف حسب المحصول وظروف الزراعة. راجع تاريخ تحديث كل مادة قبل اتباعها.",
@@ -497,6 +720,26 @@ export default function Knowledge() {
           </p>
         </div>
       </section>
+
+      {/* قارئ المقال: بيتعرض في body عشان يبقى فوق النافبار */}
+      {typeof document !== "undefined" &&
+        createPortal(
+          <AnimatePresence>
+            {selectedArticle && (
+              <ArticleReader
+                key="article-reader"
+                article={selectedArticle}
+                list={filteredArticles}
+                isArabic={isArabic}
+                t={t}
+                minutesLabel={minutesLabel}
+                onClose={() => setSelectedArticle(null)}
+                onSelect={setSelectedArticle}
+              />
+            )}
+          </AnimatePresence>,
+          document.body
+        )}
     </main>
   );
 }

@@ -1,9 +1,10 @@
+
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLanguage } from "../Context/languge";
 import { WHATSAPP_NUMBER } from "../Data/translations";
 
-// Load product photos from src/assets/imge, regardless of their extension.
+// Load product photos and icons from src/assets/imge.
 const localImages = import.meta.glob("/src/assets/imge/*", {
   eager: true,
   query: "?url",
@@ -21,6 +22,15 @@ const getProductImage = (baseName, fallback) => {
 
   return match?.[1] || fallback;
 };
+
+// Local SVG icons
+const benefitIcons = {
+  recycle: getProductImage("recycle.svg", ""),
+  support: getProductImage("support.svg", ""),
+  globe: getProductImage("globe.svg", ""),
+};
+
+const cartIcon = getProductImage("element-2.svg", "");
 
 const products = [
   {
@@ -129,7 +139,6 @@ function Products() {
   const [quantity, setQuantity] = useState(1);
   const [cart, setCart] = useState([]);
   const [activeFilter, setActiveFilter] = useState("all");
-  const [search, setSearch] = useState("");
 
   const formatPrice = (value) =>
     new Intl.NumberFormat(isArabic ? "ar-EG" : "en-EG").format(value);
@@ -209,12 +218,13 @@ function Products() {
             a: "Send your order through WhatsApp and follow up with the team.",
           },
         ],
-    search: isArabic ? "ابحثي عن منتج..." : "Search products...",
     compare: isArabic ? "اختاري المنتج المناسب لاحتياجك" : "Find the product for your needs",
     compareDesc: isArabic
       ? "تصفحي المنتجات حسب نوعها واستخدامها المعلن."
       : "Browse products by their stated type and use.",
-    noResults: isArabic ? "مفيش منتجات مطابقة للبحث." : "No matching products found.",
+    noResults: isArabic
+      ? "مفيش منتجات في التصنيف ده."
+      : "No products in this category.",
     starting: isArabic ? "يبدأ من" : "Starting from",
     purpose: isArabic ? "الاستخدام" : "Purpose",
     packagesLabel: isArabic ? "العبوات المتاحة" : "Available packages",
@@ -254,26 +264,14 @@ function Products() {
   const currentVariant = activeProduct?.variants[selectedVariant];
   const currentSubtotal = currentVariant ? currentVariant.price * quantity : 0;
 
-  const filteredProducts = useMemo(() => {
-    const normalizedSearch = search.trim().toLowerCase();
-
-    return products.filter((item) => {
-      const matchesFilter =
-        activeFilter === "all" || item.category === activeFilter;
-      const searchableText = [
-        item.name,
-        item.nameAr,
-        item.descriptionAr,
-        item.descriptionEn,
-        item.purposeAr,
-        item.purposeEn,
-      ]
-        .join(" ")
-        .toLowerCase();
-
-      return matchesFilter && searchableText.includes(normalizedSearch);
-    });
-  }, [activeFilter, search]);
+  // Filter products by category only. Search has been removed.
+  const filteredProducts = useMemo(
+    () =>
+      products.filter(
+        (item) => activeFilter === "all" || item.category === activeFilter
+      ),
+    [activeFilter]
+  );
 
   const openProductDetails = (item) => {
     setActiveProduct(item);
@@ -404,17 +402,17 @@ function Products() {
 
   const benefits = [
     {
-      icon: "♻",
+      icon: benefitIcons.recycle,
       ar: "إعادة تدوير المخلفات",
       en: "Waste Recycling",
     },
     {
-      icon: "🌱",
+      icon: benefitIcons.support,
       ar: "دعم الزراعة المستدامة",
       en: "Sustainable Agriculture",
     },
     {
-      icon: "🌍",
+      icon: benefitIcons.globe,
       ar: "الاهتمام بالبيئة",
       en: "Environmental Care",
     },
@@ -628,33 +626,20 @@ function Products() {
               exit={{ opacity: 0, y: -18 }}
               transition={{ duration: 0.3 }}
             >
-              {/* Purpose finder + search */}
+              {/* Product categories - Search removed */}
               <section className="mb-8 rounded-2xl bg-[#11341B] p-4 text-[#F2EEDF] sm:mb-12 sm:rounded-[2rem] sm:p-6 md:p-9">
-                <div className="grid gap-5 md:grid-cols-[1fr_300px] md:items-end md:gap-7">
-                  <div>
-                    <span className="text-[10px] font-bold tracking-[0.2em] text-[#A4D561] sm:text-xs">
-                      {isArabic ? "اكتشفي الأنسب لك" : "FIND YOUR MATCH"}
-                    </span>
-                    <h2 className="mt-2 text-lg font-black sm:mt-3 sm:text-2xl md:text-3xl">
-                      {labels.compare}
-                    </h2>
-                    <p className="mt-2 max-w-2xl text-xs leading-6 text-white/65 sm:mt-3 sm:text-sm sm:leading-7">
-                      {labels.compareDesc}
-                    </p>
-                  </div>
-                  <label className="block">
-                    <span className="mb-2 block text-xs font-bold text-white/70">
-                      {isArabic ? "ابحثي في المنتجات" : "Search the products"}
-                    </span>
-                    <input
-                      type="search"
-                      value={search}
-                      onChange={(event) => setSearch(event.target.value)}
-                      placeholder={labels.search}
-                      className="w-full rounded-xl border border-white/20 bg-white/10 px-3 py-2.5 text-sm text-white outline-none transition placeholder:text-white/45 focus:border-[#A4D561] sm:px-4 sm:py-3"
-                    />
-                  </label>
+                <div>
+                  <span className="text-[10px] font-bold tracking-[0.2em] text-[#A4D561] sm:text-xs">
+                    {isArabic ? "اكتشفي الأنسب لك" : "FIND YOUR MATCH"}
+                  </span>
+                  <h2 className="mt-2 text-lg font-black sm:mt-3 sm:text-2xl md:text-3xl">
+                    {labels.compare}
+                  </h2>
+                  <p className="mt-2 max-w-2xl text-xs leading-6 text-white/65 sm:mt-3 sm:text-sm sm:leading-7">
+                    {labels.compareDesc}
+                  </p>
                 </div>
+
                 <div className="mt-5 flex flex-wrap gap-1.5 sm:mt-7 sm:gap-2">
                   {filters.map((filter) => (
                     <button
@@ -755,14 +740,11 @@ function Products() {
                 </div>
               ) : (
                 <div className="rounded-2xl bg-white/70 px-5 py-12 text-center sm:py-16">
-                  <span className="text-4xl">⌕</span>
+                  <span className="text-4xl">✦</span>
                   <p className="mt-4 font-bold">{labels.noResults}</p>
                   <button
                     type="button"
-                    onClick={() => {
-                      setSearch("");
-                      setActiveFilter("all");
-                    }}
+                    onClick={() => setActiveFilter("all")}
                     className="mt-5 text-sm font-bold text-[#11341B] underline underline-offset-4"
                   >
                     {isArabic ? "عرض كل المنتجات" : "Show all products"}
@@ -841,7 +823,12 @@ function Products() {
 
             {cart.length === 0 ? (
               <div className="rounded-2xl bg-white/65 px-5 py-8 text-center sm:py-12">
-                <div className="text-4xl">🛒</div>
+                <img
+                  src={cartIcon}
+                  alt=""
+                  aria-hidden="true"
+                  className="mx-auto h-14 w-14 object-contain"
+                />
                 <h3 className="mt-4 text-base font-bold sm:text-lg">{labels.empty}</h3>
                 <p className="mt-2 text-xs text-[#11341B]/55 sm:text-sm">
                   {labels.emptyDesc}
@@ -983,7 +970,12 @@ function Products() {
                     whileHover={{ y: -6 }}
                     className="rounded-2xl border border-[#11341B]/15 bg-white/45 px-5 py-5 text-center transition sm:py-8"
                   >
-                    <span className="text-2xl sm:text-3xl">{item.icon}</span>
+                    <img
+                      src={item.icon}
+                      alt=""
+                      aria-hidden="true"
+                      className="mx-auto h-12 w-12 object-contain sm:h-14 sm:w-14"
+                    />
                     <h3 className="mt-3 text-sm font-bold sm:mt-4 sm:text-base">
                       {isArabic ? item.ar : item.en}
                     </h3>

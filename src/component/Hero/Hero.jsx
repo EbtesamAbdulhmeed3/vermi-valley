@@ -1,17 +1,16 @@
-
 import { motion } from "motion/react";
-
 import { useLanguage } from "../Context/languge";
 import heroImage from "../../assets/imge/imge hero.jpeg";
-
 import {
   WHATSAPP_NUMBER,
   WHATSAPP_MESSAGE,
 } from "../Data/translations";
 
-/* =========================
-   WORD ANIMATION
-========================= */
+const CREAM = "#F2EEDF";
+const DARK = "#11341B";
+const LIGHT = "#A4D561";
+const ACCENT_TEXT = "#5E9A2A";
+const SHOW_EXTRAS = true;
 
 function AnimatedWords({ words, startDelay = 0, className = "" }) {
   return (
@@ -36,286 +35,254 @@ function AnimatedWords({ words, startDelay = 0, className = "" }) {
   );
 }
 
-/* =========================
-   HERO VIDEO PREVIEW
-========================= */
-
-function HeroVideoPanel({ isArabic }) {
+function LeafIcon() {
   return (
-    <motion.div
-      initial={{ opacity: 0, x: isArabic ? -25 : 25 }}
-      animate={{ opacity: 1, x: 0 }}
-      transition={{
-        duration: 0.8,
-        delay: 0.55,
-        ease: "easeOut",
-      }}
-      className="mx-auto w-full min-w-0 max-w-[500px]"
+    <svg
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.8"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      className="h-4 w-4"
+      aria-hidden="true"
     >
-      {/* Video Preview */}
-
-      <div className="relative isolate aspect-video w-full overflow-hidden rounded-2xl border border-[#F2EEDF]/35 bg-[#11341B] shadow-[0_22px_55px_rgba(0,0,0,0.28)] sm:rounded-3xl">
-
-        {/* Temporary Video Background */}
-
-        <div
-          aria-hidden="true"
-          className="absolute inset-0 overflow-hidden"
-        >
-          <div className="absolute inset-0 bg-gradient-to-br from-[#315B27] via-[#11341B] to-[#081D10]" />
-
-          <div className="absolute -right-12 -top-20 h-64 w-64 rounded-full border border-[#A4D561]/15" />
-
-          <div className="absolute -right-5 -top-12 h-48 w-48 rounded-full border border-[#A4D561]/20" />
-
-          <div className="absolute -bottom-24 -left-10 h-64 w-64 rounded-full border border-[#A4D561]/15" />
-
-          <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-[clamp(4rem,10vw,7rem)] font-extrabold text-[#A4D561]/10">
-              VV
-            </span>
-          </div>
-        </div>
-
-        {/* Video Information */}
-
-        <div className="absolute inset-0 flex flex-col items-center justify-center px-4 text-center">
-
-          <span className="mb-3 rounded-full border border-[#A4D561]/35 bg-[#A4D561]/10 px-3 py-1 text-[10px] font-bold tracking-wider text-[#C5E69B] sm:text-xs">
-            {isArabic ? "فيرمي فالي" : "VERMI VALLEY"}
-          </span>
-
-          <h3 className="text-lg font-extrabold text-[#F2EEDF] sm:text-2xl">
-            {isArabic
-              ? "نتائج حقيقية في الأرض"
-              : "Real Results in the Field"}
-          </h3>
-
-          <p className="mt-2 max-w-[85%] text-xs leading-6 text-[#F2EEDF]/75 sm:text-sm">
-            {isArabic
-              ? "تجارب المزارعين والنتائج قبل وبعد"
-              : "Farmers' experiences and before & after results"}
-          </p>
-
-          {/* Temporary Play Icon */}
-
-          <div
-            aria-hidden="true"
-            className="mt-5 flex h-12 w-12 items-center justify-center rounded-full border border-[#F2EEDF]/50 bg-[#A4D561] text-lg text-[#11341B] shadow-lg sm:h-14 sm:w-14 sm:text-xl"
-          >
-            ▶
-          </div>
-
-          <span className="mt-3 text-[10px] font-semibold text-[#C5E69B]/80 sm:text-xs">
-            {isArabic ? "الفيديو قريبًا" : "Video coming soon"}
-          </span>
-        </div>
-      </div>
-
-      {/* Video Caption */}
-
-      <div className="mt-3 flex items-center justify-between gap-3 px-1">
-        <span className="text-xs font-semibold text-[#F2EEDF] sm:text-sm">
-          {isArabic ? "شاهد النتائج والتجارب" : "Watch Results & Experiences"}
-        </span>
-
-        <span className="shrink-0 rounded-full border border-[#F2EEDF]/30 px-3 py-1 text-[10px] text-[#F2EEDF]/80 sm:text-xs">
-          {isArabic ? "قبل وبعد" : "Before & After"}
-        </span>
-      </div>
-    </motion.div>
+      <path d="M5 19C5 10 10 5 19 5c0 9-5 14-14 14Z" />
+      <path d="M5 19 13 11" />
+    </svg>
   );
 }
 
-/* =========================
-   MAIN HERO COMPONENT
-========================= */
+function FeatureItem({ label }) {
+  return (
+    <span
+      className="inline-flex items-center gap-2 text-sm font-medium leading-6"
+      style={{ color: `${DARK}E6` }}
+    >
+      <span style={{ color: ACCENT_TEXT }}>
+        <LeafIcon />
+      </span>
+      {label}
+    </span>
+  );
+}
 
 function Hero() {
   const { isArabic } = useLanguage();
-
-  /* WhatsApp Link */
-
   const phoneNumber = String(WHATSAPP_NUMBER).replace(/\D/g, "");
-
   const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     WHATSAPP_MESSAGE
   )}`;
+
+  const imageSide = isArabic ? "left-0" : "right-0";
+  const fadeDir = isArabic ? "to left" : "to right";
+  const desktopMask = `linear-gradient(${fadeDir}, transparent 0%, rgba(0,0,0,0.35) 14%, #000 42%)`;
+  const desktopFadeDown =
+    "linear-gradient(to bottom, #000 0%, #000 55%, rgba(0,0,0,0.5) 80%, transparent 100%)";
+
+  const features = isArabic
+    ? [
+        { label: "حلول مستدامة" },
+        { label: "إعادة تدوير عضوي" },
+        { label: "تربة صحية" },
+      ]
+    : [
+        { label: "Sustainable Solutions" },
+        { label: "Organic Recycling" },
+        { label: "Healthy Soil" },
+      ];
 
   return (
     <section
       id="home"
       dir={isArabic ? "rtl" : "ltr"}
-      className="relative isolate flex min-h-[100svh] flex-col overflow-hidden bg-[#11341B] text-[#F2EEDF]"
+      style={{ backgroundColor: CREAM, color: DARK }}
+      className="relative isolate flex min-h-[100svh] flex-col overflow-hidden"
     >
-      {/* =========================
-          BACKGROUND IMAGE
-      ========================= */}
-
-      <div className="pointer-events-none absolute inset-0 -z-10">
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 top-0 z-0 h-[43%] overflow-hidden lg:hidden"
+      >
         <img
           src={heroImage}
-          alt={
-            isArabic
-              ? "الطبيعة والتربة والحياة الزراعية"
-              : "Nature, soil and agricultural life"
-          }
-          className="h-full w-full object-cover object-[62%_center] sm:object-center"
+          alt=""
+          className="h-full w-full object-cover object-center"
+          loading="eager"
+          fetchPriority="high"
+        />
+        <div
+          className="absolute inset-x-0 bottom-0 h-[32%]"
+          style={{
+            background: `linear-gradient(to bottom, transparent, ${CREAM})`,
+          }}
+        />
+      </div>
+
+      <div
+        aria-hidden="true"
+        className={`pointer-events-none absolute inset-y-0 ${imageSide} -z-10 hidden w-full lg:block lg:w-[62%]`}
+        style={{
+          WebkitMaskImage: `${desktopMask}, ${desktopFadeDown}`,
+          maskImage: `${desktopMask}, ${desktopFadeDown}`,
+          WebkitMaskComposite: "source-in",
+          maskComposite: "intersect",
+        }}
+      >
+        <img
+          src={heroImage}
+          alt=""
+          className="h-full w-full object-cover object-[70%_center]"
           loading="eager"
           fetchPriority="high"
         />
       </div>
 
-      {/* =========================
-          MAIN CONTENT GRID
-      ========================= */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-x-0 bottom-0 -z-[6] hidden h-[34%] lg:block"
+        style={{
+          background: `linear-gradient(to bottom, ${CREAM}00 0%, ${CREAM}B3 55%, ${CREAM} 100%)`,
+        }}
+      />
 
-      <div className="relative mx-auto flex w-full max-w-[1440px] flex-1 items-center px-5 py-28 sm:px-10 sm:py-32 lg:px-16 xl:px-20">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 600 500"
+        preserveAspectRatio="none"
+        className={`pointer-events-none absolute top-0 -z-[5] hidden h-[62%] w-[38%] lg:block ${
+          isArabic ? "left-[30%] -scale-x-100" : "right-[22%]"
+        }`}
+      >
+        <path
+          d="M0 500 C20 330 140 250 300 190 C460 130 520 60 600 0 L220 0 C260 60 170 140 90 250 C40 320 10 400 0 500Z"
+          fill={LIGHT}
+          opacity="0.55"
+        />
+      </svg>
 
-        <div className="grid w-full grid-cols-1 items-center gap-10 lg:grid-cols-[1.05fr_0.95fr] lg:gap-12 xl:gap-16">
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 400 420"
+        preserveAspectRatio="none"
+        className={`pointer-events-none absolute bottom-0 z-[1] hidden h-[48%] w-[24%] lg:block ${
+          isArabic ? "left-0 -scale-x-100" : "right-0"
+        }`}
+      >
+        <path
+          d="M400 0 C330 60 240 120 170 230 C120 310 90 380 60 420 L400 420Z"
+          fill={LIGHT}
+          opacity="0.9"
+        />
+      </svg>
 
-          {/* =========================
-              TEXT CONTENT
-          ========================= */}
+      <svg
+        aria-hidden="true"
+        viewBox="0 0 700 220"
+        preserveAspectRatio="none"
+        className={`pointer-events-none absolute bottom-0 z-[1] hidden h-[16%] w-[60%] sm:block sm:h-[20%] lg:w-[34%] ${
+          isArabic ? "right-0 -scale-x-100" : "left-0"
+        }`}
+      >
+        <path
+          d="M0 40 C60 110 160 150 300 150 C420 150 500 170 560 220 L0 220Z"
+          fill={DARK}
+        />
+        <path
+          d="M0 0 C90 60 180 110 340 120 C240 110 120 90 0 40Z"
+          fill={LIGHT}
+          opacity="0.45"
+        />
+      </svg>
 
-          <div className="flex w-full min-w-0 flex-col items-start">
+      <div className="relative z-10 mx-auto flex w-full max-w-[1440px] flex-1 items-center px-5 pb-32 pt-[44svh] sm:px-10 sm:pt-[44svh] lg:px-16 lg:pb-40 lg:pt-36 xl:px-20">
+        <div className="flex w-full min-w-0 flex-col items-start lg:max-w-[58%]">
+          <motion.h1
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7 }}
+            className="max-w-3xl text-[clamp(2.2rem,5.4vw,4.6rem)] font-extrabold leading-[1.25] tracking-tight"
+            style={{ color: DARK }}
+          >
+            {isArabic ? "من الأرض يبدأ المستقبل" : "The Future Starts from the Earth"}
+          </motion.h1>
 
-            {/* Main Heading */}
+          <motion.p
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.15 }}
+            className="mt-5 max-w-lg text-sm leading-8 sm:mt-7 sm:text-base sm:leading-9 lg:text-lg"
+            style={{ color: `${DARK}E6` }}
+          >
+            {isArabic
+              ? "إحنا فيرمي فالي، شركة من الوادي الجديد بننتج الفيرمي كومبوست ومنتجات حيوية من معالجة المخلفات العضوية باستخدام الديدان."
+              : "We are Vermi Valley, a company from New Valley producing vermicompost and bio-based products through organic waste processing using worms."}
+          </motion.p>
 
-            <h1 className="max-w-2xl text-[clamp(2.5rem,5vw,4.5rem)] font-extrabold leading-[1.4] tracking-tight text-[#F2EEDF] drop-shadow-[0_3px_12px_rgba(0,0,0,0.65)]">
-
-              {isArabic ? (
-                <>
-                  <AnimatedWords words={["من", "الأرض"]} />
-
-                  <span className="mt-1 block text-[#A4D561]">
-                    <AnimatedWords
-                      words={["ننشىء", "المستقبل"]}
-                      startDelay={0.35}
-                    />
-                  </span>
-                </>
-              ) : (
-                <>
-                  <AnimatedWords words={["From", "the", "Earth,"]} />
-
-                  <span className="mt-1 block text-[#A4D561]">
-                    <AnimatedWords
-                      words={["We", "Create", "the", "Future"]}
-                      startDelay={0.5}
-                    />
-                  </span>
-                </>
-              )}
-            </h1>
-
-            {/* Description */}
-
-            <motion.p
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.7,
-                delay: 1.15,
-              }}
-              className="mt-5 max-w-xl text-sm leading-8 text-[#F2EEDF] drop-shadow-[0_2px_8px_rgba(0,0,0,0.75)] sm:mt-6 sm:text-base sm:leading-9 lg:text-lg"
+          <motion.div
+            initial={{ opacity: 0, y: 18 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.7, delay: 1.4 }}
+            className="mt-7 flex w-full flex-wrap items-center gap-3 sm:mt-10 sm:gap-4"
+          >
+            <motion.a
+              href="#products"
+              whileHover={{ y: -3, scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              style={{ backgroundColor: DARK, color: CREAM }}
+              className="group inline-flex min-h-12 items-center gap-2 rounded-full px-6 py-3 text-sm font-semibold shadow-lg shadow-black/15 transition-colors hover:!bg-[#315B27] sm:px-8 sm:py-4 sm:text-base"
             >
-              {isArabic
-                ? "نحوّل المخلفات العضوية إلى قيمة تغذي التربة، وتعزز نمو النباتات، وتساهم في بناء مستقبل زراعي أكثر استدامة."
-                : "We transform organic waste into value that nourishes the soil, supports plant growth, and builds a more sustainable agricultural future."}
-            </motion.p>
+              {isArabic ? "اكتشف منتجاتنا" : "Explore Our Products"}
+              <span
+                className={`text-lg transition-transform duration-300 ${
+                  isArabic
+                    ? "group-hover:-translate-x-1"
+                    : "group-hover:translate-x-1"
+                }`}
+              >
+                {isArabic ? "←" : "→"}
+              </span>
+            </motion.a>
 
-            {/* CTA Buttons */}
-
-            <motion.div
-              initial={{ opacity: 0, y: 18 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{
-                duration: 0.7,
-                delay: 1.4,
-              }}
-              className="mt-7 flex w-full flex-wrap items-center gap-3 sm:mt-8 sm:gap-4"
+            <motion.a
+              href={whatsappLink}
+              target="_blank"
+              rel="noopener noreferrer"
+              whileHover={{ y: -3, scale: 1.02 }}
+              whileTap={{ scale: 0.97 }}
+              style={{ borderColor: DARK, color: DARK }}
+              className="inline-flex min-h-12 items-center gap-2 rounded-full border bg-transparent px-6 py-3 text-sm font-semibold transition-colors hover:!bg-[#11341B] hover:!text-[#F2EEDF] sm:px-8 sm:py-4 sm:text-base"
             >
-              {/* Products Button */}
-
-              <motion.a
-                href="#products"
-                whileHover={{ y: -3, scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="group inline-flex min-h-12 items-center gap-2 rounded-xl bg-[#A4D561] px-5 py-3 text-sm font-bold text-[#11341B] shadow-lg shadow-black/20 transition-colors hover:bg-[#F2EEDF] sm:px-7 sm:py-4 sm:text-base"
-              >
-                {isArabic ? "اكتشف منتجاتنا" : "Explore Our Products"}
-
-                <span className="text-lg transition-transform duration-300 group-hover:-translate-x-1">
-                  {isArabic ? "←" : "→"}
-                </span>
-              </motion.a>
-
-              {/* WhatsApp Button */}
-
-              <motion.a
-                href={whatsappLink}
-                target="_blank"
-                rel="noopener noreferrer"
-                whileHover={{ y: -3, scale: 1.02 }}
-                whileTap={{ scale: 0.97 }}
-                className="inline-flex min-h-12 items-center gap-2 rounded-xl border border-[#F2EEDF]/70 bg-[#11341B] px-5 py-3 text-sm font-bold text-[#F2EEDF] shadow-lg shadow-black/20 transition-colors hover:border-[#A4D561] hover:bg-[#315B27] sm:px-7 sm:py-4 sm:text-base"
-              >
-                {isArabic ? "تواصل معنا" : "Contact Us"}
-
-                <span aria-hidden="true">↗</span>
-              </motion.a>
-            </motion.div>
-          </div>
-
-          {/* =========================
-              VIDEO PREVIEW
-          ========================= */}
-
-          <HeroVideoPanel isArabic={isArabic} />
+              {isArabic ? "تواصل معنا" : "Contact Us"}
+            </motion.a>
+          </motion.div>
         </div>
       </div>
 
-      {/* =========================
-          SCROLL INDICATOR
-      ========================= */}
-
-      <motion.a
-        href="#about"
-        aria-label={isArabic ? "اكتشف المزيد" : "Discover more"}
-        initial={{ opacity: 0, y: 6 }}
-        animate={{
-          opacity: 1,
-          y: [0, 5, 0],
-        }}
-        transition={{
-          opacity: {
-            delay: 1.6,
-            duration: 0.7,
-          },
-          y: {
-            delay: 1.6,
-            duration: 1.8,
-            repeat: Infinity,
-            ease: "easeInOut",
-          },
-        }}
-        className="relative z-10 mx-auto mb-5 flex shrink-0 flex-col items-center gap-2 px-4 text-[#F2EEDF] drop-shadow-[0_2px_6px_rgba(0,0,0,0.7)] sm:mb-7"
-      >
-        <span className="text-[10px] font-semibold tracking-[0.18em] sm:text-xs">
-          {isArabic ? "اكتشف المزيد" : "SCROLL TO EXPLORE"}
-        </span>
-
-        <span className="flex h-8 w-5 items-start justify-center rounded-full border border-[#A4D561] p-1 sm:h-9 sm:w-6">
-          <span className="h-2 w-1 rounded-full bg-[#A4D561]" />
-        </span>
-      </motion.a>
-
-      {/* =========================
-          BOTTOM ACCENT
-      ========================= */}
-
-      <div className="pointer-events-none absolute bottom-0 left-0 h-[2px] w-full bg-gradient-to-r from-transparent via-[#A4D561]/80 to-transparent" />
+      {SHOW_EXTRAS && (
+        <motion.div
+          initial={{ opacity: 0, y: 14 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.7, delay: 1.6 }}
+          className="absolute bottom-[18%] z-10 hidden w-full px-5 sm:block sm:bottom-[20%] sm:px-10 lg:bottom-[11%] lg:px-16 xl:px-20"
+        >
+          <div className="flex flex-wrap items-center gap-x-7 gap-y-4 lg:gap-x-9">
+            {features.map((item, index) => (
+              <div
+                key={item.label}
+                className="flex items-center gap-x-7 lg:gap-x-9"
+              >
+                <FeatureItem label={item.label} />
+                {index !== features.length - 1 && (
+                  <span
+                    className="h-9 w-px"
+                    style={{ backgroundColor: `${DARK}25` }}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+        </motion.div>
+      )}
     </section>
   );
 }

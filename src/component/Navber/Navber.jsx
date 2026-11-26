@@ -6,8 +6,8 @@ import { motion, AnimatePresence } from "motion/react";
 import { useLanguage } from "../../component/Context/languge";
 import { WHATSAPP_NUMBER } from "../../component/Data/translations";
 
-import logoArabic from "../../assets/vermi valley logo a.svg";
-import logoEnglish from "../../assets/vermi valley logo en.svg";
+import logoArabic from "../../assets/imge/logo ar v1 dark.svg";
+import logoEnglish from "../../assets/imge/logo en v1 dark.svg";
 
 const navItems = [
   {
@@ -49,15 +49,18 @@ export default function Navber() {
   const [mobileOpen, setMobileOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  const isHome = location.pathname === "/";
+  const isFloating = isScrolled || !isHome;
+
   const logo = isArabic ? logoArabic : logoEnglish;
 
   const phoneNumber = String(WHATSAPP_NUMBER).replace(/\D/g, "");
   const whatsappLink = `https://wa.me/${phoneNumber}`;
 
-  // Detect page scroll
+  // Detect scroll
   useEffect(() => {
     const handleScroll = () => {
-      setIsScrolled(window.scrollY > 40);
+      setIsScrolled(window.scrollY > 50);
     };
 
     handleScroll();
@@ -76,47 +79,76 @@ export default function Navber() {
     setMobileOpen(false);
   }, [location.pathname]);
 
-  // Close menu and return to top when clicking the current page
+  // Active route detection
+  const isActive = (href) => {
+    if (href === "/") {
+      return location.pathname === "/";
+    }
+
+    return (
+      location.pathname === href ||
+      location.pathname.startsWith(`${href}/`)
+    );
+  };
+
+  // Handle navigation
   const handleNavClick = (href) => {
     setMobileOpen(false);
 
     if (location.pathname === href) {
       window.scrollTo({
         top: 0,
-        left: 0,
         behavior: "smooth",
       });
     }
   };
 
-  const isActive = (href) => location.pathname === href;
-
   return (
     <motion.nav
       dir={isArabic ? "rtl" : "ltr"}
-      initial={{ opacity: 0, y: -15 }}
+      initial={{ opacity: 0, y: -20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
       className={`
         fixed left-1/2 z-50
         -translate-x-1/2
-        top-3
-        w-[calc(100%-2rem)]
-        max-w-7xl
-        rounded-2xl
-        border border-[#11341B]/10
-        px-4 py-3 sm:px-6
-        text-[#11341B]
-        backdrop-blur-2xl
         transition-all duration-500 ease-in-out
+
         ${
-          isScrolled
-            ? "bg-[#F2EEDF]/95 shadow-xl shadow-[#11341B]/10"
-            : "bg-[#F2EEDF]/75 shadow-lg shadow-[#11341B]/5"
+          isFloating
+            ? `
+              top-3
+              w-[calc(100%-2rem)]
+              max-w-7xl
+              rounded-2xl
+              border border-[#11341B]/10
+              bg-[#F2EEDF]/95
+              px-4 py-3
+              backdrop-blur-2xl
+              sm:px-6
+            `
+            : `
+              top-0
+              w-full
+              max-w-none
+              rounded-none
+              border-transparent
+              bg-transparent
+              px-5 py-5
+              sm:px-10
+            `
         }
+
+        after:absolute
+        after:bottom-0
+        after:left-0
+        after:h-[2px]
+        after:w-full
+        after:bg-[#A4D561]
+        after:content-['']
       `}
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-5">
 
         {/* Logo */}
         <Link
@@ -127,48 +159,75 @@ export default function Navber() {
           <img
             src={logo}
             alt="Vermi Valley"
-            className="h-11 w-auto object-contain sm:h-12"
+            className={`
+              w-auto object-contain transition-all duration-300
+              ${isFloating ? "h-10 sm:h-11" : "h-12 sm:h-14"}
+            `}
           />
         </Link>
 
         {/* Desktop Navigation */}
-        <div className="hidden items-center gap-5 xl:flex">
-          {navItems.map((item) => (
-            <Link
-              key={item.id}
-              to={item.href}
-              onClick={() => handleNavClick(item.href)}
-              className={`
-                relative whitespace-nowrap
-                text-sm font-semibold
-                transition-colors duration-300
-                ${
-                  isActive(item.href)
-                    ? "text-[#668D37]"
-                    : "text-[#11341B] hover:text-[#668D37]"
-                }
-              `}
-            >
-              {isArabic ? item.ar : item.en}
+        <div className="hidden items-center gap-7 xl:flex">
+          {navItems.map((item) => {
+            const active = isActive(item.href);
 
-              {isActive(item.href) && (
+            return (
+              <Link
+                key={item.id}
+                to={item.href}
+                onClick={() => handleNavClick(item.href)}
+                className={`
+                  group relative whitespace-nowrap
+                  py-2 text-sm font-bold
+                  transition-colors duration-300
+                  ${
+                    active
+                      ? "text-[#668F3B]"
+                      : "text-[#11341B] hover:text-[#668F3B]"
+                  }
+                `}
+              >
+                {isArabic ? item.ar : item.en}
+
+                {/* Active underline */}
                 <motion.span
-                  layoutId="nav-active"
+                  initial={false}
+                  animate={{
+                    scaleX: active ? 1 : 0,
+                  }}
+                  transition={{
+                    duration: 0.3,
+                    ease: "easeOut",
+                  }}
                   className="
-                    absolute -bottom-2 right-0
-                    h-0.5 w-full rounded-full
-                    bg-[#668D37]
+                    absolute bottom-0 left-0
+                    h-[2px] w-full origin-center
+                    rounded-full bg-[#668F3B]
                   "
                 />
-              )}
-            </Link>
-          ))}
+
+                {/* Hover underline */}
+                {!active && (
+                  <span
+                    className="
+                      absolute bottom-0 left-0
+                      h-[2px] w-full origin-center
+                      scale-x-0 rounded-full
+                      bg-[#A4D561]
+                      transition-transform duration-300
+                      group-hover:scale-x-100
+                    "
+                  />
+                )}
+              </Link>
+            );
+          })}
         </div>
 
         {/* Desktop Actions */}
         <div className="hidden items-center gap-3 xl:flex">
 
-          {/* WhatsApp CTA */}
+          {/* WhatsApp */}
           <a
             href={whatsappLink}
             target="_blank"
@@ -176,10 +235,11 @@ export default function Navber() {
             className="
               inline-flex items-center gap-2
               rounded-full bg-[#11341B]
-              px-5 py-3 text-sm font-bold text-[#F2EEDF]
+              px-5 py-3
+              text-sm font-bold text-[#F2EEDF]
               transition-all duration-300
-              hover:-translate-y-1 hover:bg-[#254E2D]
-              hover:shadow-lg
+              hover:-translate-y-1
+              hover:bg-[#254E2D]
             "
           >
             <svg
@@ -203,11 +263,11 @@ export default function Navber() {
             type="button"
             onClick={toggleLanguage}
             className="
-              rounded-full border border-[#11341B]/30
-              px-4 py-2 text-xs font-bold
-              text-[#11341B]
-              transition-colors
-              hover:bg-[#11341B] hover:text-[#F2EEDF]
+              rounded-full border border-[#11341B]/20
+              px-4 py-2.5
+              text-xs font-extrabold text-[#11341B]
+              transition-all duration-300
+              hover:bg-[#A4D561]/30
             "
           >
             {isArabic ? "EN" : "AR"}
@@ -222,11 +282,10 @@ export default function Navber() {
             type="button"
             onClick={toggleLanguage}
             className="
-              rounded-full border border-[#11341B]/30
-              px-3 py-2 text-xs font-bold
-              text-[#11341B]
-              transition-colors
-              hover:bg-[#11341B]/10
+              rounded-full border border-[#11341B]/20
+              px-3 py-2
+              text-xs font-extrabold text-[#11341B]
+              transition-colors hover:bg-[#A4D561]/30
             "
           >
             {isArabic ? "EN" : "AR"}
@@ -242,8 +301,7 @@ export default function Navber() {
               flex h-10 w-10 items-center justify-center
               rounded-xl border border-[#11341B]/20
               text-[#11341B]
-              transition-colors
-              hover:bg-[#11341B]/10
+              transition-colors hover:bg-[#A4D561]/30
             "
           >
             {mobileOpen ? (
@@ -282,35 +340,51 @@ export default function Navber() {
             initial={{ opacity: 0, height: 0 }}
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
-            transition={{ duration: 0.25 }}
-            className="overflow-hidden xl:hidden"
+            transition={{ duration: 0.3 }}
+            className="
+              overflow-hidden
+              rounded-b-2xl
+              bg-[#F2EEDF]
+              xl:hidden
+            "
           >
             <div
               className="
-                mt-4 flex max-h-[75vh] flex-col gap-2
+                mt-2 flex max-h-[75vh] flex-col gap-2
                 overflow-y-auto
-                border-t border-[#11341B]/15 pt-4
+                border-t border-[#A4D561]/60
+                bg-[#F2EEDF]
+                px-2 pt-4 pb-3
               "
             >
-              {navItems.map((item) => (
-                <Link
-                  key={item.id}
-                  to={item.href}
-                  onClick={() => handleNavClick(item.href)}
-                  className={`
-                    block rounded-lg px-3 py-3
-                    text-sm font-semibold
-                    transition-colors
-                    ${
-                      isActive(item.href)
-                        ? "bg-[#A4D561]/30 text-[#11341B]"
-                        : "text-[#11341B] hover:bg-[#A4D561]/20"
-                    }
-                  `}
-                >
-                  {isArabic ? item.ar : item.en}
-                </Link>
-              ))}
+              {navItems.map((item) => {
+                const active = isActive(item.href);
+
+                return (
+                  <Link
+                    key={item.id}
+                    to={item.href}
+                    onClick={() => handleNavClick(item.href)}
+                    className={`
+                      flex items-center justify-between
+                      rounded-xl px-4 py-3
+                      text-sm font-bold
+                      transition-all duration-300
+                      ${
+                        active
+                          ? "bg-[#A4D561]/25 text-[#668F3B]"
+                          : "text-[#11341B] hover:bg-[#A4D561]/15"
+                      }
+                    `}
+                  >
+                    {isArabic ? item.ar : item.en}
+
+                    {active && (
+                      <span className="h-2 w-2 rounded-full bg-[#668F3B]" />
+                    )}
+                  </Link>
+                );
+              })}
 
               {/* Mobile WhatsApp */}
               <a
@@ -321,7 +395,8 @@ export default function Navber() {
                 className="
                   mt-2 flex items-center justify-center gap-2
                   rounded-xl bg-[#11341B]
-                  px-5 py-4 text-sm font-bold text-[#F2EEDF]
+                  px-5 py-4
+                  text-sm font-bold text-[#F2EEDF]
                   transition-colors hover:bg-[#254E2D]
                 "
               >

@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useLayoutEffect, useRef, useState } from "react";
 import {
   AnimatePresence,
   animate,
@@ -25,10 +25,8 @@ function getLocalImage(imageName) {
       .pop()
       .replace(/\.[^.]+$/, "")
       .toLowerCase();
-
     return fileName === imageName.toLowerCase();
   });
-
   return found ? found[1] : null;
 }
 
@@ -133,8 +131,8 @@ const CONTENT = {
     ctaText:
       "سواء كنت مزارعًا أو شريكًا أو صاحب فكرة، يسعدنا التواصل معك والتعرف على ما يمكننا تحقيقه معًا.",
     whatsapp: "تواصل معنا عبر واتساب",
-    whatsappMessage:
-      "مرحباً، أريد معرفة المزيد عن شركة Vermi Valley.",
+    call: "اتصل بنا",
+    whatsappMessage: "مرحباً، أريد معرفة المزيد عن شركة Vermi Valley.",
   },
 
   en: {
@@ -230,8 +228,8 @@ const CONTENT = {
     ctaText:
       "Whether you are a farmer, partner, or entrepreneur, we would love to hear from you and explore what we can achieve together.",
     whatsapp: "Contact us on WhatsApp",
-    whatsappMessage:
-      "Hello, I would like to know more about Vermi Valley.",
+    call: "Call us",
+    whatsappMessage: "Hello, I would like to know more about Vermi Valley.",
   },
 };
 
@@ -256,13 +254,40 @@ function Reveal({ children, delay = 0, className = "" }) {
 function Eyebrow({ children, light = false }) {
   return (
     <span
-      className={`inline-flex items-center gap-3 text-sm font-bold ${
+      className={`inline-flex items-center gap-3 text-sm font-extrabold ${
         light ? "text-[#A4D561]" : "text-[#5D852E]"
       }`}
     >
-      <span className="h-px w-8 bg-current" />
+      <span
+        aria-hidden="true"
+        className={`h-px w-8 ${light ? "bg-[#A4D561]" : "bg-[#5D852E]"}`}
+      />
       {children}
     </span>
+  );
+}
+
+function SectionHead({ eyebrow, title, text, light = false, center = false }) {
+  return (
+    <div className={center ? "mx-auto max-w-3xl text-center" : "max-w-2xl"}>
+      <Eyebrow light={light}>{eyebrow}</Eyebrow>
+      <h2
+        className={`mt-5 text-3xl font-extrabold leading-[1.35] md:text-5xl md:leading-[1.3] ${
+          light ? "text-[#F2EEDF]" : "text-[#11341B]"
+        }`}
+      >
+        {title}
+      </h2>
+      {text && (
+        <p
+          className={`mt-5 leading-9 ${
+            light ? "text-[#F2EEDF]/75" : "text-[#11341B]/70"
+          }`}
+        >
+          {text}
+        </p>
+      )}
+    </div>
   );
 }
 
@@ -297,16 +322,34 @@ function CountUp({ to, duration = 1.6 }) {
 
 function Gallery({ items, isArabic, t }) {
   const [index, setIndex] = useState(0);
+  const [isPaused, setIsPaused] = useState(false);
+  const rootRef = useRef(null);
+  const thumbsRef = useRef(null);
   const thumbRefs = useRef([]);
   const count = items.length;
+  const reduce = useReducedMotion();
+
+  // التشغيل التلقائي بيشتغل بس لما المعرض ظاهر على الشاشة
+  const inView = useInView(rootRef, { amount: 0.4 });
 
   useEffect(() => {
-    thumbRefs.current[index]?.scrollIntoView({
-      behavior: "smooth",
-      inline: "center",
-      block: "nearest",
-    });
-  }, [index]);
+    if (reduce || isPaused || !inView || count < 2) return;
+    const timer = setInterval(() => {
+      setIndex((current) => (current + 1) % count);
+    }, 4500);
+    return () => clearInterval(timer);
+  }, [count, isPaused, inView, reduce]);
+
+  // تحريك شريط المصغرات أفقيًا فقط (بدون scrollIntoView عشان ما يسحبش الصفحة)
+  useEffect(() => {
+    const container = thumbsRef.current;
+    const el = thumbRefs.current[index];
+    if (!container || !el) return;
+    const c = container.getBoundingClientRect();
+    const e = el.getBoundingClientRect();
+    const delta = e.left + e.width / 2 - (c.left + c.width / 2);
+    container.scrollBy({ left: delta, behavior: reduce ? "auto" : "smooth" });
+  }, [index, reduce]);
 
   if (!count) return null;
 
@@ -324,13 +367,22 @@ function Gallery({ items, isArabic, t }) {
 
   return (
     <div
+      ref={rootRef}
       tabIndex={0}
       onKeyDown={onKeyDown}
+      onMouseEnter={() => setIsPaused(true)}
+      onMouseLeave={() => setIsPaused(false)}
+      onFocus={() => setIsPaused(true)}
+      onBlur={(event) => {
+        if (!event.currentTarget.contains(event.relatedTarget)) {
+          setIsPaused(false);
+        }
+      }}
       role="group"
       aria-roledescription="carousel"
       className="rounded-3xl outline-none focus-visible:ring-2 focus-visible:ring-[#A4D561]"
     >
-      <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-[#315B27]/40 md:aspect-[16/9]">
+      <div className="relative aspect-[4/3] overflow-hidden rounded-3xl bg-[#315B27]/40 shadow-[0_30px_80px_rgba(0,0,0,0.35)] md:aspect-[16/9]">
         <AnimatePresence mode="wait">
           <motion.img
             key={index}
@@ -349,11 +401,11 @@ function Gallery({ items, isArabic, t }) {
               if (d < -60) go(1);
               else if (d > 60) go(-1);
             }}
-            className="absolute inset-0 h-full w-full cursor-grab object-cover active:cursor-grabbing"
+            className="absolute inset-0 h-full w-full cursor-grab touch-pan-y object-cover active:cursor-grabbing"
           />
         </AnimatePresence>
 
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#11341B]/90 via-transparent to-transparent" />
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-t from-[#11341B]/90 via-[#11341B]/10 to-transparent" />
 
         <div className="pointer-events-none absolute inset-x-0 bottom-0 flex items-end justify-between gap-6 p-5 md:p-8">
           <div className="max-w-xl">
@@ -364,7 +416,7 @@ function Gallery({ items, isArabic, t }) {
               {current.label}
             </h3>
           </div>
-          <span className="shrink-0 text-sm font-bold tabular-nums text-[#F2EEDF]/80">
+          <span className="shrink-0 rounded-full bg-[#11341B]/60 px-3 py-1 text-sm font-bold tabular-nums text-[#F2EEDF] backdrop-blur-sm">
             {index + 1} / {count}
           </span>
         </div>
@@ -387,7 +439,10 @@ function Gallery({ items, isArabic, t }) {
         </button>
       </div>
 
-      <div className="mt-4 flex snap-x gap-3 overflow-x-auto pb-2">
+      <div
+        ref={thumbsRef}
+        className="mt-4 flex snap-x gap-3 overflow-x-auto pb-2 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+      >
         {items.map((item, k) => (
           <button
             key={k}
@@ -425,13 +480,30 @@ function About() {
 
   const [activePillar, setActivePillar] = useState(0);
 
-  // Parallax خفيف لصورة المقدمة
+  // أول ما الصفحة تفتح تبدأ من فوق
+  useLayoutEffect(() => {
+    const previousRestoration = window.history.scrollRestoration;
+    window.history.scrollRestoration = "manual";
+
+    const goTop = () =>
+      window.scrollTo({ top: 0, left: 0, behavior: "instant" });
+
+    goTop();
+    const frame = requestAnimationFrame(goTop);
+
+    return () => {
+      cancelAnimationFrame(frame);
+      window.history.scrollRestoration = previousRestoration;
+    };
+  }, []);
+
+  // Parallax خفيف لصورة المقدمة (على عنصر منفصل عن أنيميشن الظهور)
   const introImageRef = useRef(null);
   const { scrollYProgress: introProgress } = useScroll({
     target: introImageRef,
     offset: ["start end", "end start"],
   });
-  const introImageY = useTransform(introProgress, [0, 1], ["-6%", "6%"]);
+  const introImageY = useTransform(introProgress, [0, 1], ["-5%", "5%"]);
 
   // خط الرحلة بيترسم مع التمرير
   const timelineRef = useRef(null);
@@ -441,10 +513,11 @@ function About() {
   });
   const lineScale = useTransform(timelineProgress, [0, 1], [0, 1]);
 
-  const whatsappLink = `https://wa.me/${String(WHATSAPP_NUMBER).replace(
-    /\D/g,
-    ""
-  )}?text=${encodeURIComponent(t.whatsappMessage)}`;
+  const phoneNumber = String(WHATSAPP_NUMBER).replace(/\D/g, "");
+  const whatsappLink = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
+    t.whatsappMessage
+  )}`;
+  const phoneLink = `tel:${phoneNumber}`;
 
   const pillars = [
     { title: t.vision, desc: t.visionText },
@@ -496,12 +569,16 @@ function About() {
           <div className="order-2 lg:order-1">
             <Reveal>
               <Eyebrow>{t.eyebrow}</Eyebrow>
+            </Reveal>
 
+            <Reveal delay={0.08}>
               <h1 className="mt-6 max-w-2xl text-4xl font-extrabold leading-[1.3] md:text-6xl md:leading-[1.25]">
                 {t.title}
               </h1>
+            </Reveal>
 
-              <span className="mt-6 inline-flex items-center gap-2 rounded-full bg-[#A4D561]/35 px-4 py-2 text-sm font-bold text-[#315B27]">
+            <Reveal delay={0.16}>
+              <span className="mt-6 inline-flex items-center gap-2 rounded-full border border-[#5D852E]/30 bg-[#A4D561]/30 px-4 py-2 text-sm font-bold text-[#315B27]">
                 <svg
                   viewBox="0 0 24 24"
                   fill="none"
@@ -517,11 +594,13 @@ function About() {
               </span>
             </Reveal>
 
-            <Reveal delay={0.1}>
+            <Reveal delay={0.24}>
               <p className="mt-8 max-w-xl text-lg font-semibold leading-9 text-[#11341B]">
                 {t.intro}
               </p>
+            </Reveal>
 
+            <Reveal delay={0.32}>
               <div className="mt-8 max-w-xl space-y-5 border-s-2 border-[#A4D561] ps-6">
                 <p className="leading-9 text-[#11341B]/80">{t.story}</p>
                 <p className="leading-9 text-[#11341B]/80">{t.story2}</p>
@@ -531,21 +610,23 @@ function About() {
 
           <Reveal className="order-1 lg:order-2">
             <div className="relative mx-auto max-w-xl">
-              <div className="absolute -inset-3 rounded-[34px] border border-[#A4D561]/70" />
-
+              <div
+                aria-hidden="true"
+                className="absolute -bottom-4 -end-4 h-full w-full rounded-[32px] border-2 border-[#A4D561]"
+              />
               <div
                 ref={introImageRef}
-                className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#A4D561]/30 shadow-[0_20px_60px_rgba(17,52,27,0.16)]"
+                className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#315B27] shadow-[0_24px_70px_rgba(17,52,27,0.22)]"
               >
                 {galleryImages[0].src ? (
                   <motion.img
                     src={galleryImages[0].src}
                     alt={t.imageLabel}
-                    style={reduce ? undefined : { y: introImageY, scale: 1.14 }}
+                    style={reduce ? undefined : { y: introImageY, scale: 1.12 }}
                     className="absolute inset-0 h-full w-full object-cover"
                   />
                 ) : (
-                  <div className="flex h-full items-center justify-center font-bold">
+                  <div className="flex h-full items-center justify-center font-bold text-[#F2EEDF]">
                     Vermi Valley
                   </div>
                 )}
@@ -636,13 +717,11 @@ function About() {
       <section className="px-5 py-20 md:px-10 md:py-28">
         <div className="mx-auto grid max-w-7xl gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:gap-20">
           <Reveal className="lg:sticky lg:top-32 lg:self-start">
-            <Eyebrow>{t.journeyEyebrow}</Eyebrow>
-            <h2 className="mt-6 text-3xl font-extrabold leading-[1.3] md:text-5xl">
-              {t.journey}
-            </h2>
-            <p className="mt-6 max-w-md leading-9 text-[#11341B]/75">
-              {t.journeyText}
-            </p>
+            <SectionHead
+              eyebrow={t.journeyEyebrow}
+              title={t.journey}
+              text={t.journeyText}
+            />
           </Reveal>
 
           <div ref={timelineRef} className="relative">
@@ -652,7 +731,7 @@ function About() {
               className="absolute bottom-0 start-6 top-0 w-px bg-[#5D852E]"
             />
 
-            <ol className="space-y-12">
+            <ol className="space-y-8">
               {t.stages.map((stage) => (
                 <li key={stage.number} className="relative ps-20">
                   <motion.span
@@ -660,18 +739,20 @@ function About() {
                     whileInView={{ backgroundColor: "#A4D561" }}
                     viewport={{ once: true, amount: 0.8 }}
                     transition={{ duration: 0.4 }}
-                    className="absolute start-0 top-0 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#5D852E] text-sm font-extrabold text-[#11341B]"
+                    className="absolute start-0 top-6 flex h-12 w-12 items-center justify-center rounded-full border-2 border-[#5D852E] text-sm font-extrabold text-[#11341B]"
                   >
                     {stage.number}
                   </motion.span>
 
                   <Reveal>
-                    <h3 className="text-2xl font-extrabold text-[#315B27]">
-                      {stage.title}
-                    </h3>
-                    <p className="mt-3 max-w-lg leading-8 text-[#11341B]/75">
-                      {stage.desc}
-                    </p>
+                    <div className="rounded-2xl border border-[#11341B]/10 bg-[#FAF8F1] p-6 shadow-[0_10px_30px_rgba(17,52,27,0.06)]">
+                      <h3 className="text-xl font-extrabold text-[#315B27] md:text-2xl">
+                        {stage.title}
+                      </h3>
+                      <p className="mt-3 max-w-lg leading-8 text-[#11341B]/75">
+                        {stage.desc}
+                      </p>
+                    </div>
                   </Reveal>
                 </li>
               ))}
@@ -683,12 +764,13 @@ function About() {
       {/* 4) GALLERY */}
       <section className="bg-[#11341B] px-5 py-20 text-[#F2EEDF] md:px-10 md:py-28">
         <div className="mx-auto max-w-6xl">
-          <Reveal className="mb-10 max-w-2xl">
-            <Eyebrow light>{t.siteEyebrow}</Eyebrow>
-            <h2 className="mt-6 text-3xl font-extrabold leading-[1.3] md:text-5xl">
-              {t.siteTitle}
-            </h2>
-            <p className="mt-6 leading-9 text-[#F2EEDF]/80">{t.siteText}</p>
+          <Reveal className="mb-12">
+            <SectionHead
+              light
+              eyebrow={t.siteEyebrow}
+              title={t.siteTitle}
+              text={t.siteText}
+            />
           </Reveal>
 
           <Reveal>
@@ -700,18 +782,15 @@ function About() {
       {/* 5) MANAGEMENT */}
       <section className="px-5 py-20 md:px-10 md:py-28">
         <div className="mx-auto max-w-7xl">
-          <Reveal className="mb-12 max-w-2xl">
-            <Eyebrow>{t.managementEyebrow}</Eyebrow>
-            <h2 className="mt-6 text-3xl font-extrabold leading-[1.3] md:text-5xl">
-              {t.management}
-            </h2>
+          <Reveal className="mb-12">
+            <SectionHead eyebrow={t.managementEyebrow} title={t.management} />
           </Reveal>
 
           <div className="grid items-center gap-12 lg:grid-cols-[0.7fr_1.3fr] lg:gap-16">
             <Reveal>
               <div className="relative mx-auto max-w-sm">
                 <div className="absolute -inset-3 rounded-[28px] border border-[#A4D561]/70" />
-                <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] bg-[#A4D561]">
+                <div className="relative aspect-[4/5] overflow-hidden rounded-[24px] bg-[#A4D561] shadow-[0_20px_60px_rgba(17,52,27,0.18)]">
                   {managerImage ? (
                     <img
                       src={managerImage}
@@ -728,39 +807,43 @@ function About() {
             </Reveal>
 
             <Reveal delay={0.1}>
-              <span className="text-sm font-bold text-[#5D852E]">
-                {t.managementLabel}
-              </span>
-              <h3 className="mt-3 text-3xl font-extrabold md:text-4xl">
-                {t.manager}
-              </h3>
-              <p className="mt-2 font-semibold text-[#315B27]">{t.role}</p>
+              <div className="rounded-3xl border border-[#11341B]/10 bg-[#FAF8F1] p-7 shadow-[0_14px_40px_rgba(17,52,27,0.07)] md:p-10">
+                <span className="text-sm font-bold text-[#5D852E]">
+                  {t.managementLabel}
+                </span>
+                <h3 className="mt-3 text-3xl font-extrabold md:text-4xl">
+                  {t.manager}
+                </h3>
+                <p className="mt-2 font-semibold text-[#315B27]">{t.role}</p>
 
-              <div className="my-7 h-px w-full max-w-md bg-[#A4D561]" />
+                <div className="my-7 h-px w-full max-w-md bg-[#A4D561]" />
 
-              <p className="max-w-2xl text-lg leading-9 text-[#11341B]/90">
-                {t.managerText}
-              </p>
-              <p className="mt-5 max-w-2xl leading-9 text-[#11341B]/75">
-                {t.expansion}
-              </p>
+                <p className="max-w-2xl text-lg leading-9 text-[#11341B]/90">
+                  {t.managerText}
+                </p>
+                <p className="mt-5 max-w-2xl leading-9 text-[#11341B]/75">
+                  {t.expansion}
+                </p>
+              </div>
             </Reveal>
           </div>
         </div>
       </section>
 
-      {/* 6) STATS — عدادات بدون كروت */}
-      <section className="bg-[#A4D561] px-5 py-16 md:px-10 md:py-20">
-        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-x-6 gap-y-10 lg:grid-cols-4 lg:gap-x-10">
+      {/* 6) STATS */}
+      <section className="px-5 pb-20 md:px-10 md:pb-28">
+        <div className="mx-auto grid max-w-7xl grid-cols-2 gap-4 lg:grid-cols-4 lg:gap-5">
           {stats.map((stat) => (
             <div
               key={stat.id}
-              className="border-t-2 border-[#11341B]/30 pt-5"
+              className="rounded-3xl bg-[#A4D561] p-6 md:p-8"
             >
-              <p className="text-4xl font-extrabold text-[#11341B] md:text-5xl">
+              <p className="text-3xl font-extrabold text-[#11341B] md:text-5xl">
                 {stat.node}
                 {stat.suffix && (
-                  <span className="ms-2 text-lg font-bold">{stat.suffix}</span>
+                  <span className="ms-2 text-base font-bold md:text-lg">
+                    {stat.suffix}
+                  </span>
                 )}
               </p>
               <p className="mt-3 text-sm font-bold leading-6 text-[#11341B]/80 md:text-base">
@@ -772,42 +855,73 @@ function About() {
       </section>
 
       {/* 7) CTA */}
-      <section className="bg-[#11341B] px-5 py-24 text-[#F2EEDF] md:py-32">
-        <Reveal className="mx-auto max-w-3xl text-center">
-          <Eyebrow light>{t.ctaEyebrow}</Eyebrow>
+      <section className="px-5 pb-20 md:px-10 md:pb-28">
+        <Reveal className="relative mx-auto max-w-5xl overflow-hidden rounded-[32px] bg-[#11341B] px-6 py-16 text-center text-[#F2EEDF] md:px-16 md:py-24">
+          <div
+            aria-hidden="true"
+            className="pointer-events-none absolute inset-0 opacity-[0.07]"
+            style={{
+              backgroundImage: `url("${heroPattern}")`,
+              backgroundSize: "360px",
+            }}
+          />
+          <div className="relative">
+            <div className="flex justify-center">
+              <Eyebrow light>{t.ctaEyebrow}</Eyebrow>
+            </div>
 
-          <h2 className="mt-6 text-3xl font-extrabold leading-[1.3] md:text-5xl">
-            {t.cta}
-          </h2>
+            <h2 className="mt-6 text-3xl font-extrabold leading-[1.35] md:text-5xl md:leading-[1.3]">
+              {t.cta}
+            </h2>
 
-          <p className="mx-auto mt-6 max-w-2xl leading-9 text-[#F2EEDF]/80">
-            {t.ctaText}
-          </p>
+            <p className="mx-auto mt-6 max-w-2xl leading-9 text-[#F2EEDF]/80">
+              {t.ctaText}
+            </p>
 
-          <motion.a
-            href={whatsappLink}
-            target="_blank"
-            rel="noopener noreferrer"
-            whileHover={{ y: -4 }}
-            whileTap={{ scale: 0.97 }}
-            className="mt-10 inline-flex items-center gap-3 rounded-full bg-[#A4D561] px-8 py-4 font-extrabold text-[#11341B] shadow-lg transition-colors duration-300 hover:bg-[#F2EEDF]"
-          >
-            <svg
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="1.7"
-              className="h-5 w-5"
-              aria-hidden="true"
-            >
-              <path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5Z" />
-              <path d="M8.5 8.5c.3 2.1 2.2 4 4.3 4.3" />
-            </svg>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-4">
+              <motion.a
+                href={whatsappLink}
+                target="_blank"
+                rel="noopener noreferrer"
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-3 rounded-full bg-[#A4D561] px-7 py-4 font-extrabold text-[#11341B] shadow-lg transition-colors duration-300 hover:bg-[#F2EEDF]"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path d="M21 11.5a8.4 8.4 0 0 1-12.4 7.4L3 20l1.2-5.2A8.4 8.4 0 1 1 21 11.5Z" />
+                  <path d="M8.5 8.5c.3 2.1 2.2 4 4.3 4.3" />
+                </svg>
+                {t.whatsapp}
+                <span aria-hidden="true">↗</span>
+              </motion.a>
 
-            {t.whatsapp}
-
-            <span aria-hidden="true">↗</span>
-          </motion.a>
+              <motion.a
+                href={phoneLink}
+                whileHover={{ y: -4 }}
+                whileTap={{ scale: 0.97 }}
+                className="inline-flex items-center gap-3 rounded-full border border-[#A4D561] bg-transparent px-7 py-4 font-extrabold text-[#F2EEDF] transition-colors duration-300 hover:bg-[#A4D561] hover:text-[#11341B]"
+              >
+                <svg
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="1.7"
+                  className="h-5 w-5"
+                  aria-hidden="true"
+                >
+                  <path d="M5 4.5A1.5 1.5 0 0 1 6.5 3h2A1.5 1.5 0 0 1 10 4.2l.7 3a1.5 1.5 0 0 1-.7 1.6l-1.4.9a14 14 0 0 0 5.7 5.7l.9-1.4a1.5 1.5 0 0 1 1.6-.7l3 .7a1.5 1.5 0 0 1 1.2 1.5v2A1.5 1.5 0 0 1 19.5 19C10.4 19 5 13.6 5 4.5Z" />
+                </svg>
+                {t.call}
+              </motion.a>
+            </div>
+          </div>
         </Reveal>
       </section>
     </main>

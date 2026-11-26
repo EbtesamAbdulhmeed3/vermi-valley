@@ -2,6 +2,13 @@
 import { useState } from "react";
 import { AnimatePresence, motion } from "framer-motion";
 
+import heroImage from "../../assets/imge/web image 2.jpg";
+import engineerIcon from "../../assets/imge/engineer.svg";
+import farmerIcon from "../../assets/imge/farmer.svg";
+import elementImage from "../../assets/imge/element -2.svg";
+
+const WHATSAPP_NUMBER = "201282111101";
+
 const faqs = [
   {
     question: "إزاي أقدر أستشير مهندس زراعي؟",
@@ -40,9 +47,72 @@ const fadeUp = {
   visible: { opacity: 1, y: 0 },
 };
 
+/* WhatsApp outline icon */
+function WhatsAppIcon() {
+  return (
+    <svg
+      viewBox="0 0 32 32"
+      fill="none"
+      className="h-6 w-6"
+      stroke="currentColor"
+      strokeWidth="1.7"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+      aria-hidden="true"
+    >
+      <path d="M26.5 15.5a10.5 10.5 0 0 1-15.4 9.3L5 26.5l1.8-5.8A10.5 10.5 0 1 1 26.5 15.5Z" />
+      <path d="M11.5 10.5c.3-.7.7-.7 1-.7h.8c.3 0 .5.1.7.6l1 2.2c.1.3.1.5-.1.8l-.8 1c-.2.2-.2.4 0 .7.5.9 1.3 1.7 2.2 2.2.3.2.5.2.7 0l1-1c.2-.2.5-.2.8-.1l2.2 1c.5.2.6.4.6.7v.8c0 .3 0 .7-.7 1-1 .5-2.4.5-4.4-.4-2.1-.9-4-2.7-5-4.8-.9-2-.9-3.4-.4-4.4Z" />
+    </svg>
+  );
+}
+
 export default function ConsultEngineer() {
   const [userType, setUserType] = useState("farmer");
   const [openFaq, setOpenFaq] = useState(null);
+
+  const [formData, setFormData] = useState({
+    name: "",
+    phone: "",
+    governorate: "",
+    crop: "",
+    message: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+
+    setFormData((prev) => ({
+      ...prev,
+      [name]: value,
+    }));
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    const userTypeText =
+      userType === "farmer" ? "مزارع" : "مهندس زراعي";
+
+    const message = `
+استفسار جديد من موقع Vermi Valley 🌱
+
+الصفة: ${userTypeText}
+
+الاسم: ${formData.name}
+رقم الموبايل: ${formData.phone}
+المحافظة: ${formData.governorate}
+${userType === "farmer" ? `نوع المحصول: ${formData.crop}` : ""}
+
+تفاصيل الاستفسار:
+${formData.message}
+    `.trim();
+
+    const whatsappURL = `https://wa.me/${WHATSAPP_NUMBER}?text=${encodeURIComponent(
+      message
+    )}`;
+
+    window.open(whatsappURL, "_blank", "noopener,noreferrer");
+  };
 
   return (
     <main
@@ -51,8 +121,6 @@ export default function ConsultEngineer() {
     >
       {/* Hero */}
       <section className="relative px-5 pb-20 pt-24 md:px-12 lg:px-20">
-        <div className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-[#A4D561]/20 blur-3xl" />
-
         <div className="relative mx-auto grid max-w-7xl items-center gap-12 lg:grid-cols-2">
           <motion.div
             initial="hidden"
@@ -87,42 +155,18 @@ export default function ConsultEngineer() {
             </a>
           </motion.div>
 
+          {/* Hero Image - Simple Design */}
           <motion.div
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.8 }}
-            className="relative mx-auto w-full max-w-lg"
+            className="mx-auto w-full max-w-lg"
           >
-            <div className="absolute -inset-5 rounded-[3rem] bg-[#A4D561]/30 blur-2xl" />
-
-            <div className="relative overflow-hidden rounded-[2.5rem] border border-[#A4D561]/60 bg-[#A4D561]/20 p-5">
-              <div className="rounded-[2rem] bg-[#11341B] p-8 text-[#F2EEDF] md:p-10">
-                <div className="mb-8 flex items-center justify-between">
-                  <span className="text-sm text-[#A4D561]">
-                    VERMI VALLEY
-                  </span>
-                  <span className="text-3xl">🌱</span>
-                </div>
-
-                <div className="mb-8 flex h-40 items-center justify-center">
-                  <div className="relative flex h-36 w-36 items-center justify-center rounded-full border border-[#A4D561]/40 bg-[#A4D561]/10">
-                    <div className="absolute h-28 w-28 rounded-full border border-dashed border-[#A4D561]/50" />
-                    <span className="text-6xl">🌿</span>
-                  </div>
-                </div>
-
-                <h2 className="mb-3 text-center text-2xl font-bold">
-                  كل أرض تستحق اهتمام
-                </h2>
-                <p className="text-center leading-8 text-[#F2EEDF]/70">
-                  افهم احتياجات أرضك قبل ما تختار المنتج المناسب.
-                </p>
-              </div>
-            </div>
-
-            <div className="absolute -bottom-5 -right-4 rounded-2xl bg-[#A4D561] px-5 py-3 font-bold shadow-lg">
-              اسأل واستفسر 🌱
-            </div>
+            <img
+              src={heroImage}
+              alt="مهندس زراعي"
+              className="h-[320px] w-full rounded-3xl object-cover object-center sm:h-[400px] lg:h-[460px]"
+            />
           </motion.div>
         </div>
       </section>
@@ -151,39 +195,59 @@ export default function ConsultEngineer() {
           </motion.div>
 
           <div className="mt-10 grid gap-5 md:grid-cols-2">
+            {/* Farmer */}
             <button
               type="button"
               onClick={() => setUserType("farmer")}
               className={`rounded-3xl border-2 p-8 text-right transition duration-300 ${
                 userType === "farmer"
-                  ? "border-[#11341B] bg-[#A4D561]/30 shadow-lg"
+                  ? "border-[#668D37] bg-[#A4D561]/20 shadow-md"
                   : "border-[#11341B]/10 bg-white/40 hover:border-[#A4D561]"
               }`}
             >
-              <span className="mb-5 block text-5xl">🌾</span>
-              <h3 className="text-2xl font-extrabold">أنا مزارع</h3>
+              <img
+                src={farmerIcon}
+                alt=""
+                className="mb-5 h-16 w-16 object-contain"
+              />
+
+              <h3 className="text-2xl font-extrabold">
+                أنا مزارع
+              </h3>
+
               <p className="mt-3 leading-7 text-[#11341B]/65">
                 عندي أرض أو محصول وعايز أسأل عن احتياجاته.
               </p>
+
               <span className="mt-5 inline-block text-sm font-bold text-[#668D37]">
                 {userType === "farmer" ? "✓ تم الاختيار" : "اختار"}
               </span>
             </button>
 
+            {/* Engineer */}
             <button
               type="button"
               onClick={() => setUserType("engineer")}
               className={`rounded-3xl border-2 p-8 text-right transition duration-300 ${
                 userType === "engineer"
-                  ? "border-[#11341B] bg-[#A4D561]/30 shadow-lg"
+                  ? "border-[#668D37] bg-[#A4D561]/20 shadow-md"
                   : "border-[#11341B]/10 bg-white/40 hover:border-[#A4D561]"
               }`}
             >
-              <span className="mb-5 block text-5xl">👨‍🌾</span>
-              <h3 className="text-2xl font-extrabold">أنا مهندس زراعي</h3>
+              <img
+                src={engineerIcon}
+                alt=""
+                className="mb-5 h-16 w-16 object-contain"
+              />
+
+              <h3 className="text-2xl font-extrabold">
+                أنا مهندس زراعي
+              </h3>
+
               <p className="mt-3 leading-7 text-[#11341B]/65">
                 مهتم بالتعاون أو الاستفسار عن منتجاتنا.
               </p>
+
               <span className="mt-5 inline-block text-sm font-bold text-[#668D37]">
                 {userType === "engineer" ? "✓ تم الاختيار" : "اختار"}
               </span>
@@ -210,18 +274,30 @@ export default function ConsultEngineer() {
             </p>
 
             <div className="mt-10 space-y-5">
+              {/* Element 2 */}
               <div className="flex items-center gap-4">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#A4D561]/15 text-2xl">
-                  🌱
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#A4D561]/50 bg-[#A4D561]/10 p-2">
+                  <img
+                    src={elementImage}
+                    alt=""
+                    className="h-full w-full object-contain"
+                  />
                 </span>
-                <span className="text-sm">كل أرض ليها ظروفها</span>
+
+                <span className="text-sm">
+                  كل أرض ليها ظروفها
+                </span>
               </div>
 
+              {/* WhatsApp Icon */}
               <div className="flex items-center gap-4">
-                <span className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#A4D561]/15 text-2xl">
-                  💬
+                <span className="flex h-12 w-12 shrink-0 items-center justify-center rounded-2xl border border-[#A4D561]/60 bg-transparent text-[#A4D561]">
+                  <WhatsAppIcon />
                 </span>
-                <span className="text-sm">شاركنا سؤالك بوضوح</span>
+
+                <span className="text-sm">
+                  شاركنا سؤالك بوضوح
+                </span>
               </div>
             </div>
           </div>
@@ -231,18 +307,20 @@ export default function ConsultEngineer() {
               بيانات الاستفسار
             </h3>
 
-            <form
-              onSubmit={(e) => e.preventDefault()}
-              className="space-y-6"
-            >
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="grid gap-5 md:grid-cols-2">
                 <div>
                   <label className="mb-2 block text-sm font-bold">
                     الاسم
                   </label>
+
                   <input
                     type="text"
+                    name="name"
+                    value={formData.name}
+                    onChange={handleChange}
                     placeholder="اكتب اسمك"
+                    required
                     className="w-full rounded-xl border border-[#11341B]/15 bg-[#F2EEDF]/50 px-4 py-4 outline-none transition focus:border-[#668D37]"
                   />
                 </div>
@@ -251,10 +329,15 @@ export default function ConsultEngineer() {
                   <label className="mb-2 block text-sm font-bold">
                     رقم الموبايل
                   </label>
+
                   <input
                     type="tel"
+                    name="phone"
+                    value={formData.phone}
+                    onChange={handleChange}
                     placeholder="01xxxxxxxxx"
                     dir="ltr"
+                    required
                     className="w-full rounded-xl border border-[#11341B]/15 bg-[#F2EEDF]/50 px-4 py-4 text-right outline-none transition focus:border-[#668D37]"
                   />
                 </div>
@@ -264,9 +347,14 @@ export default function ConsultEngineer() {
                 <label className="mb-2 block text-sm font-bold">
                   المحافظة
                 </label>
+
                 <input
                   type="text"
+                  name="governorate"
+                  value={formData.governorate}
+                  onChange={handleChange}
                   placeholder="اكتب المحافظة"
+                  required
                   className="w-full rounded-xl border border-[#11341B]/15 bg-[#F2EEDF]/50 px-4 py-4 outline-none transition focus:border-[#668D37]"
                 />
               </div>
@@ -276,9 +364,14 @@ export default function ConsultEngineer() {
                   <label className="mb-2 block text-sm font-bold">
                     نوع المحصول
                   </label>
+
                   <input
                     type="text"
+                    name="crop"
+                    value={formData.crop}
+                    onChange={handleChange}
                     placeholder="بتزرع إيه؟"
+                    required
                     className="w-full rounded-xl border border-[#11341B]/15 bg-[#F2EEDF]/50 px-4 py-4 outline-none transition focus:border-[#668D37]"
                   />
                 </div>
@@ -288,24 +381,27 @@ export default function ConsultEngineer() {
                 <label className="mb-2 block text-sm font-bold">
                   تفاصيل الاستفسار
                 </label>
+
                 <textarea
+                  name="message"
+                  value={formData.message}
+                  onChange={handleChange}
                   rows="5"
                   placeholder="احكيلنا عن سؤالك أو احتياجك..."
+                  required
                   className="w-full resize-none rounded-xl border border-[#11341B]/15 bg-[#F2EEDF]/50 px-4 py-4 outline-none transition focus:border-[#668D37]"
                 />
               </div>
 
               <button
-                type="button"
-                disabled
-                className="w-full cursor-not-allowed rounded-xl bg-[#11341B]/50 px-6 py-4 font-bold text-white"
+                type="submit"
+                className="w-full rounded-xl bg-[#11341B] px-6 py-4 font-bold text-white transition duration-300 hover:-translate-y-1 hover:bg-[#254E2D]"
               >
-                إرسال الاستفسار قريبًا
+                إرسال الاستفسار عبر واتساب
               </button>
 
               <p className="text-center text-xs leading-6 text-[#11341B]/50">
-                سيتم تفعيل استقبال الاستفسارات بعد اعتماد وسيلة
-                الإرسال من الشركة.
+                سيتم فتح واتساب برسالتك، ويمكنك مراجعتها وإرسالها للشركة.
               </p>
             </form>
           </div>
@@ -319,6 +415,7 @@ export default function ConsultEngineer() {
             <span className="text-sm font-bold text-[#668D37]">
               أسئلة المزارعين
             </span>
+
             <h2 className="mt-4 text-3xl font-extrabold md:text-4xl">
               عندك سؤال؟ ممكن تلاقي إجابته هنا
             </h2>
@@ -338,6 +435,7 @@ export default function ConsultEngineer() {
                   className="flex w-full items-center justify-between gap-4 p-5 text-right font-bold md:p-6"
                 >
                   <span>{faq.question}</span>
+
                   <motion.span
                     animate={{ rotate: openFaq === index ? 45 : 0 }}
                     className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-[#A4D561]/40 text-xl"
@@ -373,9 +471,11 @@ export default function ConsultEngineer() {
           <h2 className="text-3xl font-extrabold md:text-4xl">
             كل بداية صح بتبدأ بسؤال
           </h2>
+
           <p className="mx-auto mt-4 max-w-xl leading-8 text-[#11341B]/75">
             افهم احتياجات أرضك واتعرف على منتجات Vermi Valley.
           </p>
+
           <a
             href="/products"
             className="mt-8 inline-flex rounded-full bg-[#11341B] px-8 py-4 font-bold text-white transition hover:-translate-y-1 hover:bg-[#254E2D]"

@@ -10,11 +10,12 @@ import Navbar from "./component/Navber/Navber";
 import Home from "./page/Home";
 import About from "./component/About/About";
 import Products from "./component/Products/Products";
-import WhatsAppButton from "./component/WhatsApp/WhatsAppButton";
+
 import Impact from "./component/Impact/Impact";
 import Recommendations from "./component/Recommendations/Recommendations";
 import Knowledge from "./component/Knowledge/Knowledge";
 import ConsultEngineer from "./component/ConsultEngineer/ConsultEngineer";
+import NotFound from "./component/NotFound/NotFound";
 
 import { useLanguage } from "./component/Context/languge";
 
@@ -68,7 +69,7 @@ function App() {
       <ScrollToTop />
 
       <Navbar />
-      <WhatsAppButton />
+      
 
       <Routes>
         {/* Home */}
@@ -158,15 +159,8 @@ function App() {
           }
         />
 
-        {/* Not Found */}
-        <Route
-          path="*"
-          element={
-            <PlaceholderPage
-              title={isArabic ? "الصفحة غير موجودة" : "Page Not Found"}
-            />
-          }
-        />
+        {/* Not Found - 404 */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </main>
   );
