@@ -1,4 +1,3 @@
-
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import { useLanguage } from "../Context/languge";
@@ -90,9 +89,9 @@ const products = [
     descriptionEn:
       "Chlorella algae extract is a natural plant nutrient source that helps stimulate roots, improve nutrient absorption, and promote greener leaves and stronger plants.",
     comparisonAr:
-      "مستخلص طحالب طبيعي يساعد على تنشيط الجذور وتحسين نمو النبات وزيادة اخضرار الأوراق.",
+      "مستخلص طحالب الكلوريلا الطبيعي، يساعد على تنشيط الجذور وتحسين امتصاص العناصر الغذائية ودعم نمو النبات.",
     comparisonEn:
-      "A natural algae extract that helps stimulate roots, improve plant growth, and promote greener leaves.",
+      "Natural Chlorella algae extract that helps stimulate roots, improve nutrient absorption, and support plant growth.",
     purposeAr: "لدعم نمو النبات",
     purposeEn: "For plant growth support",
     category: "chlorella",
@@ -105,8 +104,20 @@ const products = [
       "https://images.unsplash.com/photo-1497250681960-ef046c08a56e?auto=format&fit=crop&w=1600&q=85"
     ),
     variants: [
-      { labelAr: "Red Wiggler - 1 كجم", labelEn: "Red Wiggler - 1 KG", amount: 1, unit: "kg", price: 800 },
-      { labelAr: "الزاحف الأفريقي - 1 كجم", labelEn: "African Nightcrawler - 1 KG", amount: 1, unit: "kg", price: 1200 },
+      {
+        labelAr: "عبوة 1 لتر",
+        labelEn: "1 Liter Bottle",
+        amount: 1,
+        unit: "liter",
+        price: 85,
+      },
+      {
+        labelAr: "عبوة 5 لتر",
+        labelEn: "5 Liter Bottle",
+        amount: 5,
+        unit: "liter",
+        price: 300,
+      },
     ],
   },
   {
@@ -135,7 +146,7 @@ const products = [
 const filters = [
   { id: "all", ar: "كل المنتجات", en: "All Products" },
   { id: "soil", ar: "تحسين التربة", en: "Soil Improvement" },
-  { id: "liquid", ar: "منتجات سائلة", en: "Liquid Products" },
+  { id: "liquid", ar: "شي فيرمي", en: "Vermi Tea" },
   { id: "chlorella", ar: "كلوريلا", en: "Chlorella" },
   { id: "microbes", ar: "الكائنات الدقيقة", en: "Microorganisms" },
 ];
