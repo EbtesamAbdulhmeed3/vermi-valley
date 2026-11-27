@@ -14,7 +14,6 @@ import supportIcon from "../assets/imge/support.svg";
 import compostIcon from "../assets/imge/element -2.svg";
 import wormIcon from "../assets/imge/worm.svg";
 
-
 // Arabic and English logos
 import vermiLogoArabic from "../assets/imge/logo ar v1 dark.svg";
 import vermiLogoEnglish from "../assets/imge/logo en v1 dark.svg";
@@ -94,7 +93,6 @@ function AnimatedHeading({ text, featured = false, className = "" }) {
 }
 
 // Animated description
-
 function AnimatedDescription({ children, className = "" }) {
   return (
     <motion.p
@@ -551,7 +549,9 @@ function Home() {
             </motion.a>
 
             <motion.a
-              href="/contact"
+              href="https://wa.me/201282111101"
+              target="_blank"
+              rel="noopener noreferrer"
               whileHover={{ y: -4, scale: 1.04 }}
               whileTap={{ scale: 0.97 }}
               className="rounded-xl border-2 border-[#11341B] px-8 py-4 font-bold text-[#11341B] transition hover:bg-white/40"

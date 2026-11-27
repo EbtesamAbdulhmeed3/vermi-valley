@@ -1,11 +1,8 @@
 
-export const WHATSAPP_NUMBER = "201033216793";
+export const WHATSAPP_NUMBER = "201282111101";
 
 export const WHATSAPP_MESSAGE =
   "مرحباً، أريد الاستفسار عن منتجات وخدمات VERMI VALLEY.";
-
-
-
 
 export const translations = {
   ar: {
