@@ -607,10 +607,6 @@ function About() {
           <Reveal className="order-1 lg:order-2">
             <div className="relative mx-auto max-w-xl">
               <div
-                aria-hidden="true"
-                className="absolute -bottom-4 -end-4 h-full w-full rounded-[32px] border-2 border-[#A4D561]"
-              />
-              <div
                 ref={introImageRef}
                 className="relative aspect-[4/5] overflow-hidden rounded-[28px] bg-[#315B27] shadow-[0_24px_70px_rgba(17,52,27,0.22)]"
               >

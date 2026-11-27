@@ -2,6 +2,7 @@ import { motion } from "motion/react";
 import { Link } from "react-router-dom";
 import { useLanguage } from "../../component/Context/languge";
 import locationImage from "../../assets/imge/loction9.jpg";
+import patternImage from "../../assets/imge/vv pattern 1.png";
 
 // حركة ظهور الكلمات بالتتابع
 const wordContainer = {
@@ -137,7 +138,18 @@ export default function OurStory() {
       dir={isArabic ? "rtl" : "ltr"}
       className="relative isolate overflow-hidden bg-[#F2EEDF] pt-8 pb-14 md:pt-10 md:pb-20"
     >
-      <div className="relative mx-auto max-w-7xl px-5 md:px-10">
+      {/* الباترن في خلفية السيكشن بالكامل */}
+      <div
+        aria-hidden="true"
+        className="pointer-events-none absolute inset-0 z-0 opacity-[0.18]"
+        style={{
+          backgroundImage: `url("${patternImage}")`,
+          backgroundRepeat: "repeat",
+          backgroundSize: "420px auto",
+        }}
+      />
+
+      <div className="relative z-10 mx-auto max-w-7xl px-5 md:px-10">
         {/* عنوان السيكشن */}
         <motion.div
           initial={{ opacity: 0, y: 25 }}
